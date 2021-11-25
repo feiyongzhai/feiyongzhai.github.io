@@ -6,6 +6,7 @@
 
 - [[https://github.com/feiyongzhai/.emacs.d][个人配置]]
 - [[https://github.com/feiyongzhai][我的GITHUB首页]]
+- [[file:404.org]]
 
 ** 别人的配置
 
