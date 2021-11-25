@@ -2,11 +2,10 @@
 #+AUTHOR: yongfeizhai
 #+OPTIONS: toc:nil
 
-* 我的主页
-
-** 我的配置
+** 我的
 
 - [[https://github.com/feiyongzhai/.emacs.d][个人配置]]
+- [[https://github.com/feiyongzhai][我的GITHUB首页]]
 
 ** 别人的配置
 
@@ -21,7 +20,6 @@
 - [[https://manateelazycat.github.io/][懒猫博客]]
 - [[https://emacstalk.github.io/][EmacsTalk]]
 - [[https://emacs-china.org/][EmacsChina]]
-- [[https://github.com/feiyongzhai][我的GITHUB首页]]
 - [[https://github.com/manateelazycat/emacs-application-framework][EAF GITHUB仓库地址]]
 
 ** 笔记
