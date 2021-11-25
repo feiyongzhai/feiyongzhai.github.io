@@ -1,0 +1,34 @@
+#+TITLE: 我的小仓库
+#+AUTHOR: yongfeizhai
+#+OPTIONS: toc:nil
+
+* 我的主页
+
+** 我的配置
+
+- [[https://github.com/feiyongzhai/.emacs.d][个人配置]]
+
+** 别人的配置
+
+- [[https://github.com/manateelazycat/lazycat-emacs][manateelazycat]]
+- [[https://github.com/DogLooksGood/dogEmacs][DogLooksGood]]
+- [[https://protesilaos.com/dotemacs/][Prot]]
+- [[https://github.com/MatthewZMD/.emacs.d][MatthewZMD]]
+- [[https://github.com/SteamedFish/emacszh-tg-configs][SteamedFish]]
+
+** 书签
+
+- [[https://manateelazycat.github.io/][懒猫博客]]
+- [[https://emacstalk.github.io/][EmacsTalk]]
+- [[https://emacs-china.org/][EmacsChina]]
+- [[https://github.com/feiyongzhai][我的GITHUB首页]]
+- [[https://github.com/manateelazycat/emacs-application-framework][EAF GITHUB仓库地址]]
+
+** 笔记
+
+*** 编译安装svg支持
+
+我用的Linux Mint 20，主要是需要安装下面的lib
+#+begin_src shell
+sudo apt install librsvg2-dev
+#+end_src
