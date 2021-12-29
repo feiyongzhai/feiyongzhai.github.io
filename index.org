@@ -1,5 +1,6 @@
 #+TITLE: 我的小仓库
 #+AUTHOR: yongfeizhai
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/org.css"/>
 #+OPTIONS: toc:nil
 
 ** 我的
