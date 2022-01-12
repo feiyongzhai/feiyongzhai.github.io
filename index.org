@@ -3,6 +3,10 @@
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/org.css"/>
 #+OPTIONS: toc:nil
 
+#+begin_quote
+Emacs 应该是你的工具，而不是你的玩具！
+#+end_quote
+
 ** 我的
 
 - [[https://github.com/feiyongzhai/.emacs.d][个人配置]]
