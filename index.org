@@ -33,7 +33,7 @@ Emacs 应该是你的工具，而不是你的玩具！
 
 *** 编译安装svg支持
 
-我用的Linux Mint 20，主要是需要安装下面的lib
+我用的Linux Mint 20，主要是需要安装下面的[[https://ubuntuforums.org/showthread.php?t=2215649][lib]]
 #+begin_src shell
   sudo apt install librsvg2-dev
 #+end_src
