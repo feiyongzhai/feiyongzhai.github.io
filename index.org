@@ -17,7 +17,6 @@ Emacs 应该是你的工具，而不是你的玩具！
 
 - [[https://github.com/manateelazycat/lazycat-emacs][manateelazycat]]
 - [[https://github.com/DogLooksGood/dogEmacs][DogLooksGood]]
-- [[https://protesilaos.com/dotemacs/][Prot]]
 - [[https://github.com/MatthewZMD/.emacs.d][MatthewZMD]]
 - [[https://github.com/SteamedFish/emacszh-tg-configs][SteamedFish]]
 
@@ -28,6 +27,7 @@ Emacs 应该是你的工具，而不是你的玩具！
 - [[https://emacstalk.github.io/][EmacsTalk]]
 - [[https://emacs-china.org/][EmacsChina]]
 - [[https://github.com/manateelazycat/emacs-application-framework][EAF GITHUB仓库地址]]
+- [[file:links.org][Emacser的博客]]
 
 ** 笔记
 

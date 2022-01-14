@@ -1,0 +1,6 @@
+#+TITLE: 记录一些 Emacser 的博客链接
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/style.css"/>
+#+DESCRIPTION: 不想把这些放到浏览器的书签里面，放到这个地方挺合适的
+
+- [[https://xiaoguo.net/][小过的布拉格 & 挑战极限 创造奇迹]] :: 从他的主页拿了一下 =css= 文件，非常感谢！
+- [[https://protesilaos.com/dotemacs/][Prot]] :: 看了他很多关于 Emacs 的视频
