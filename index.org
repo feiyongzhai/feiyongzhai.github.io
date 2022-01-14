@@ -1,6 +1,6 @@
 #+TITLE: 我的小仓库
 #+AUTHOR: yongfeizhai
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/org.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/style.css"/>
 #+OPTIONS: toc:nil
 
 #+begin_quote
@@ -35,5 +35,5 @@ Emacs 应该是你的工具，而不是你的玩具！
 
 我用的Linux Mint 20，主要是需要安装下面的lib
 #+begin_src shell
-sudo apt install librsvg2-dev
+  sudo apt install librsvg2-dev
 #+end_src
