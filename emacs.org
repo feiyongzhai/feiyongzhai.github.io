@@ -1,0 +1,26 @@
+#+TITLE: Emacs
+#+AUTHOR: yongfeizhai
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/style.css"/>
+# #+SETUPFILE: ./org/theme-bigblow.setup
+#+OPTIONS: toc:nil
+
+* Org publish
+
+一开始是想给我的博客主页添加一个导航栏的（后来搜索发现准确的名字叫
+preamble），然后就发现了 =org-publish= 这个东西
+
+由于我现在是用 org-export 来书写我的博客的，感觉很简单好用，感觉
+=org-publish= 把问题复杂化了，一开始就有点抵触，刚刚突然意识到
+=org-publish= 相对于 org-export 来管理博客的好处： *不需要一个一个文件的导出 html*
+
+而且我现在如果不用 =org-publish= 的方案，我添加 =preamble= 是通过
+=.dir-locals.el= 的方式实现的，比较烦人的一点是每次打开博客文件夹都会
+弹出一个 =.dir-locals.el= 的警告。用 =org-publish= 就不会。
+
+而且一开始我不想用 =org-publish= 的一个原因是：我以为用 =org-publish=
+就要为我的博客写死一些配置，以后变起来很比较麻烦，不灵活，刚刚才意识到
+并不会，因为 =org-publish-project-alist= 是一个 alist，我的博客的配置
+只是这个 alist 中的一项。所以存在写死的说法，反而会很灵活。
+
+这么说起来 =org-publish= 除了配置麻烦点外，好处多多，之后如果
+=org-export= 的方案遇到瓶颈了可以转投 =org-publish= 的怀抱。

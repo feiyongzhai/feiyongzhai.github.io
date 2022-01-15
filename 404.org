@@ -1,2 +1,2 @@
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/org.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/style.css"/>
 This is 404

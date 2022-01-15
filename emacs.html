@@ -3,14 +3,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-01-15 Sat 20:55 -->
+<!-- 2022-01-15 Sat 20:54 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>记录一些 Emacser 的博客链接</title>
+<title>Emacs</title>
 <meta name="generator" content="Org mode" />
 <meta name="author" content="yongfeizhai" />
-<meta name="description" content="不想把这些放到浏览器的书签里面，放到这个地方挺合适的"
- />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -225,31 +223,50 @@
 <div id="navList">
 <ul>
 <li><a href="./index.html">首页</a></li>
-<li><a href="./eamcs.html">Emacs</a></li>
 <li><a href="./about.html">关于</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<h1 class="title">记录一些 Emacser 的博客链接</h1>
-<dl class="org-dl">
-<dt><a href="https://xiaoguo.net/">小过的布拉格 &amp; 挑战极限 创造奇迹</a></dt><dd>从他的主页拿了一下 <code>css</code> 文件，非常感谢！</dd>
-<dt><a href="https://protesilaos.com/">Protesilaos Stavrou</a></dt><dd>看了他很多关于 Emacs 的视频</dd>
-<dt><a href="http://xahlee.info/emacs/index.html">Xah Emacs Site</a></dt><dd>李杀：写过很多简明的 Emacs 教程</dd>
-<dt><a href="http://0x100.club/">V for Vendetta</a></dt><dd>同时是拿了他的 <code>css</code> 文件，非常感谢！</dd>
-<dt><a href="https://www.zmonster.me/categories.html">ZMonster's Blog</a></dt><dd>看过他的 Org-mode 的教程</dd>
-<dt><a href="https://oremacs.com/">(or emacs · irrelevant)</a></dt><dd>Ivy/Swiper/Counsel 等众多 Emacs 插件的作者， Emacs 大牛</dd>
-<dt><a href="https://cestlaz.github.io/">C'est la Z</a></dt><dd>Using Emacs 系列视频作者，看过很多，通俗易懂。</dd>
-<dt><a href="https://www.emacswiki.org/emacs/AndyStewart">EmacsWiki: Andy Stewart</a></dt><dd>懒猫的 EmacsWiki 主页</dd>
-<dt><a href="https://karthinks.com/">Karthinks</a></dt><dd>抄了他的 LaTeX auto snippets 的配置，很实用，赞！</dd>
-<dt><a href="https://chriszheng.science/">M-x Chris-An-Emacser | 一个Emacs爱好者的闲言碎语</a></dt><dd>有一个一句话说Elisp系列</dd>
-<dt><a href="http://zwz.github.io/">zwz | zwz's</a></dt><dd>网上冲浪偶遇，记录一下</dd>
-<dt><a href="https://ruib.in/">没事瞎扯</a></dt><dd>网上冲浪偶遇，记录一下</dd>
-</dl>
+<h1 class="title">Emacs</h1>
+
+<div id="outline-container-org34a2273" class="outline-2">
+<h2 id="org34a2273"><span class="section-number-2">1</span> Org publish</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+一开始是想给我的博客主页添加一个导航栏的（后来搜索发现准确的名字叫
+preamble），然后就发现了 <code>org-publish</code> 这个东西
+</p>
+
+<p>
+由于我现在是用 org-export 来书写我的博客的，感觉很简单好用，感觉
+<code>org-publish</code> 把问题复杂化了，一开始就有点抵触，刚刚突然意识到
+<code>org-publish</code> 相对于 org-export 来管理博客的好处： <b>不需要一个一个文件的导出 html</b>
+</p>
+
+<p>
+而且我现在如果不用 <code>org-publish</code> 的方案，我添加 <code>preamble</code> 是通过
+<code>.dir-locals.el</code> 的方式实现的，比较烦人的一点是每次打开博客文件夹都会
+弹出一个 <code>.dir-locals.el</code> 的警告。用 <code>org-publish</code> 就不会。
+</p>
+
+<p>
+而且一开始我不想用 <code>org-publish</code> 的一个原因是：我以为用 <code>org-publish</code>
+就要为我的博客写死一些配置，以后变起来很比较麻烦，不灵活，刚刚才意识到
+并不会，因为 <code>org-publish-project-alist</code> 是一个 alist，我的博客的配置
+只是这个 alist 中的一项。所以存在写死的说法，反而会很灵活。
+</p>
+
+<p>
+这么说起来 <code>org-publish</code> 除了配置麻烦点外，好处多多，之后如果
+<code>org-export</code> 的方案遇到瓶颈了可以转投 <code>org-publish</code> 的怀抱。
+</p>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: yongfeizhai</p>
-<p class="date">Created: 2022-01-15 Sat 20:55</p>
+<p class="date">Created: 2022-01-15 Sat 20:54</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
