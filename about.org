@@ -1,0 +1,7 @@
+#+TITLE: 关于我
+#+AUTHOR: yongfeizhai
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/style.css"/>
+# #+SETUPFILE: ./org/theme-bigblow.setup
+#+OPTIONS: toc:nil
+
+我叫翟勇飞
