@@ -1,4 +1,4 @@
-#+TITLE: 我的小仓库
+#+TITLE: 我的小博客
 #+AUTHOR: yongfeizhai
 # #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
 #+OPTIONS: toc:nil
@@ -15,7 +15,7 @@ Emacs 应该是你的工具，而不是你的玩具！
 
 ** 别人的配置
 
-- [[https://github.com/manateelazycat/lazycat-emacs][manateelazycat]]
+- [[https://github.com/manateelazycat/lazycat-emacs][Manateelazycat]]
 - [[https://github.com/DogLooksGood/dogEmacs][DogLooksGood]]
 - [[https://github.com/MatthewZMD/.emacs.d][MatthewZMD]]
 - [[https://github.com/SteamedFish/emacszh-tg-configs][SteamedFish]]
