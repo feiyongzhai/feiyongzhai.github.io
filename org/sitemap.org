@@ -1,0 +1,8 @@
+#+TITLE: Sitemap for project blog-orgs
+
+- [[file:404.org][404]]
+- [[file:blog.org][Emacs]]
+- [[file:about.org][关于我]]
+- [[file:test.org][图片测试]]
+- [[file:index.org][我的小仓库]]
+- [[file:links.org][记录一些 Emacser 的博客链接]]

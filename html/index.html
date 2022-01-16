@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-01-16 Sun 12:40 -->
+<!-- 2022-01-16 Sun 17:21 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Emacs</title>
+<title>我的小仓库</title>
 <meta name="generator" content="Org mode" />
 <meta name="author" content="yongfeizhai" />
 <style type="text/css">
@@ -193,7 +193,7 @@
   .org-svg { width: 90%; }
   /*]]>*/-->
 </style>
-<link rel="stylesheet" type="text/css" href="css/style.css"/>
+<link rel="stylesheet" type="text/css" href="../css/style.css" />
 <script type="text/javascript">
 // @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
 <!--/*--><![CDATA[/*><!--*/
@@ -219,55 +219,81 @@
 </head>
 <body>
 <div id="preamble" class="status">
-
 <div id="navList">
 <ul>
 <li><a href="./index.html">首页</a></li>
 <li><a href="./blog.html">日志</a></li>
+<li><a href="./test.html">图片</a></li>
 <li><a href="./about.html">关于</a></li>
 </ul>
 </div>
 </div>
 <div id="content">
-<h1 class="title">Emacs</h1>
+<h1 class="title">我的小仓库</h1>
+<blockquote>
+<p>
+Emacs 应该是你的工具，而不是你的玩具！
+</p>
+</blockquote>
 
-<div id="outline-container-org2558aa6" class="outline-2">
-<h2 id="org2558aa6"><span class="section-number-2">1</span> Org publish</h2>
+<div id="outline-container-org781a6d1" class="outline-2">
+<h2 id="org781a6d1"><span class="section-number-2">1</span> 我的</h2>
 <div class="outline-text-2" id="text-1">
-<p>
-一开始是想给我的博客主页添加一个导航栏的（后来搜索发现准确的名字叫
-preamble），然后就发现了 <code>org-publish</code> 这个东西
-</p>
+<ul class="org-ul">
+<li><a href="https://github.com/feiyongzhai/.emacs.d">个人配置</a></li>
+<li><a href="https://github.com/feiyongzhai">我的GITHUB首页</a></li>
+<li><a href="404.html">404</a></li>
+</ul>
+</div>
+</div>
 
-<p>
-由于我现在是用 org-export 来书写我的博客的，感觉很简单好用，感觉
-<code>org-publish</code> 把问题复杂化了，一开始就有点抵触，刚刚突然意识到
-<code>org-publish</code> 相对于 org-export 来管理博客的好处： <b>不需要一个一个文件的导出 html</b>
-</p>
+<div id="outline-container-org8f3b9f0" class="outline-2">
+<h2 id="org8f3b9f0"><span class="section-number-2">2</span> 别人的配置</h2>
+<div class="outline-text-2" id="text-2">
+<ul class="org-ul">
+<li><a href="https://github.com/manateelazycat/lazycat-emacs">manateelazycat</a></li>
+<li><a href="https://github.com/DogLooksGood/dogEmacs">DogLooksGood</a></li>
+<li><a href="https://github.com/MatthewZMD/.emacs.d">MatthewZMD</a></li>
+<li><a href="https://github.com/SteamedFish/emacszh-tg-configs">SteamedFish</a></li>
+</ul>
+</div>
+</div>
 
-<p>
-而且我现在如果不用 <code>org-publish</code> 的方案，我添加 <code>preamble</code> 是通过
-<code>.dir-locals.el</code> 的方式实现的，比较烦人的一点是每次打开博客文件夹都会
-弹出一个 <code>.dir-locals.el</code> 的警告。用 <code>org-publish</code> 就不会。
-</p>
+<div id="outline-container-orga94e076" class="outline-2">
+<h2 id="orga94e076"><span class="section-number-2">3</span> 书签</h2>
+<div class="outline-text-2" id="text-3">
+<ul class="org-ul">
+<li><a href="https://zetcode.com/gui/pyqt5/">PyQt5教程</a></li>
+<li><a href="https://manateelazycat.github.io/">懒猫博客</a></li>
+<li><a href="https://emacstalk.github.io/">EmacsTalk</a></li>
+<li><a href="https://emacs-china.org/">EmacsChina</a></li>
+<li><a href="https://github.com/manateelazycat/emacs-application-framework">EAF GITHUB仓库地址</a></li>
+<li><a href="links.html">Emacser的博客</a></li>
+</ul>
+</div>
+</div>
 
+<div id="outline-container-orgb16176a" class="outline-2">
+<h2 id="orgb16176a"><span class="section-number-2">4</span> 笔记</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org7e7b362" class="outline-3">
+<h3 id="org7e7b362"><span class="section-number-3">4.1</span> <a href="https://www.linuxmi.com/ubuntu-20-04-gnu-emacs-27-1.html">编译安装</a>svg支持</h3>
+<div class="outline-text-3" id="text-4-1">
 <p>
-而且一开始我不想用 <code>org-publish</code> 的一个原因是：我以为用 <code>org-publish</code>
-就要为我的博客写死一些配置，以后变起来很比较麻烦，不灵活，刚刚才意识到
-并不会，因为 <code>org-publish-project-alist</code> 是一个 alist，我的博客的配置
-只是这个 alist 中的一项。所以不存在写死的说法，反而会很灵活。
+我用的Linux Mint 20，主要是需要安装下面的<a href="https://ubuntuforums.org/showthread.php?t=2215649">lib</a>
 </p>
-
-<p>
-这么说起来 <code>org-publish</code> 除了配置麻烦点外，好处多多，之后如果
-<code>org-export</code> 的方案遇到瓶颈了可以转投 <code>org-publish</code> 的怀抱。
-</p>
+<div class="org-src-container">
+<pre class="src src-shell">sudo apt install librsvg2-dev
+</pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: yongfeizhai</p>
-<p class="date">Created: 2022-01-16 Sun 12:40</p>
+<p class="date">Created: 2022-01-16 Sun 17:21</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

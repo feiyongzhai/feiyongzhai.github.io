@@ -1,6 +1,6 @@
 #+TITLE: 关于我
 #+AUTHOR: yongfeizhai
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/style.css"/>
+# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
 # #+SETUPFILE: ./org/theme-bigblow.setup
 #+OPTIONS: toc:nil
 
