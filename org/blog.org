@@ -24,3 +24,16 @@ preamble），然后就发现了 =org-publish= 这个东西
 
 这么说起来 =org-publish= 除了配置麻烦点外，好处多多，之后如果
 =org-export= 的方案遇到瓶颈了可以转投 =org-publish= 的怀抱。
+
+* 终于还是用上了 =org-publish= ，备份一下参考链接
+CREATE: <2022-01-16 Sun 20:23>
+
+单纯不想放到浏览器的书签栏里，放在博客做归档挺好的
+
+- [[https://vincent.demeester.fr/posts/2020-03-22-org-mode-website.html][Migrating to an org-mode website]]
+- [[https://thibaultmarin.github.io/blog/posts/2016-11-13-Personal_website_in_org.html#org3371cfb][Personal website in org]]
+- [[http://www.zhangjiee.com/blog/2019/build-site-with-org-mode.html][使用 org-mode 搭建网站]]
+- [[https://www.taingram.org/blog/org-mode-blog.html][Building a Emacs Org-Mode Blog]]
+- [[https://www.shellcodes.org/Emacs/%E4%BD%BF%E7%94%A8Org-Mode%E7%94%9F%E6%88%90%E5%8D%9A%E5%AE%A2.html][使用 Org-Mode 生成博客]]
+- [[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][Publishing Org-mode files to HTML]]
+- [[https://emacs.stackexchange.com/questions/18818/creating-a-menu-from-file-directory-structure-upon-html-export][Creating a menu from file / directory structure upon html export]]

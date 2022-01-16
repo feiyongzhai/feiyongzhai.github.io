@@ -1,3 +1,2 @@
-# -*- mode: Org; org-download-image-dir: "~/Pictures/foo"; -*-
 # #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
 This is 404
