@@ -2,6 +2,6 @@
 404 not found
 
 #+begin_quote
-每一段结束，都是新一段的开始！
+每一段结束，都是一段新的开始！
 #+end_quote
 
