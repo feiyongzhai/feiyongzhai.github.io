@@ -20,7 +20,7 @@ preamble），然后就发现了 =org-publish= 这个东西
 而且一开始我不想用 =org-publish= 的一个原因是：我以为用 =org-publish=
 就要为我的博客写死一些配置，以后变起来很比较麻烦，不灵活，刚刚才意识到
 并不会，因为 =org-publish-project-alist= 是一个 alist，我的博客的配置
-只是这个 alist 中的一项。所以存在写死的说法，反而会很灵活。
+只是这个 alist 中的一项。所以不存在写死的说法，反而会很灵活。
 
 这么说起来 =org-publish= 除了配置麻烦点外，好处多多，之后如果
 =org-export= 的方案遇到瓶颈了可以转投 =org-publish= 的怀抱。
