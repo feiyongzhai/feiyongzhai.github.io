@@ -2,15 +2,15 @@
 # #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
 #+DESCRIPTION: 不想把这些放到浏览器的书签里面，放到这个地方挺合适的
 
-- [[https://xiaoguo.net/][小过的布拉格 & 挑战极限 创造奇迹]] :: 从他的主页拿了一下 =css= 文件，非常感谢！
-- [[https://protesilaos.com/][Protesilaos Stavrou]] :: 看了他很多关于 Emacs 的视频
-- [[http://xahlee.info/emacs/index.html][Xah Emacs Site]] :: 李杀：写过很多简明的 Emacs 教程
-- [[http://0x100.club/][V for Vendetta]] :: 同时是拿了他的 =css= 文件，非常感谢！
-- [[https://www.zmonster.me/categories.html][ZMonster's Blog]] :: 看过他的 Org-mode 的教程
+- [[https://xiaoguo.net/][小过的布拉格 & 挑战极限 创造奇迹]] :: 从他的主页拿了他的 =css= 文件，非常感谢！
 - [[https://oremacs.com/][(or emacs · irrelevant)]] :: Ivy/Swiper/Counsel 等众多 Emacs 插件的作者， Emacs 大牛
+- [[https://protesilaos.com/][Protesilaos Stavrou]] :: 看了他很多关于 Emacs 的视频
 - [[https://cestlaz.github.io/][C'est la Z]] :: Using Emacs 系列视频作者，看过很多，通俗易懂。
-- [[https://www.emacswiki.org/emacs/AndyStewart][EmacsWiki: Andy Stewart]] :: 懒猫的 EmacsWiki 主页
 - [[https://karthinks.com/][Karthinks]] :: 抄了他的 LaTeX auto snippets 的配置，很实用，赞！
-- [[https://chriszheng.science/][M-x Chris-An-Emacser | 一个Emacs爱好者的闲言碎语]] :: 有一个一句话说Elisp系列
+- [[https://www.zmonster.me/categories.html][ZMonster's Blog]] :: 看过他的 Org-mode 的教程
+- [[http://0x100.club/][V for Vendetta]] :: 同样是拿了他的 =css= 文件，非常感谢！
+- [[http://xahlee.info/emacs/index.html][Xah Emacs Site]] :: 李杀：写过很多简明的 Emacs 教程
+- [[https://www.emacswiki.org/emacs/AndyStewart][EmacsWiki: Andy Stewart]] :: 懒猫的 EmacsWiki 主页
+- [[https://chriszheng.science/][M-x Chris-An-Emacser]] :: 有个一句话说Elisp系列
 - [[http://zwz.github.io/][zwz | zwz's]] :: 网上冲浪偶遇，记录一下
 - [[https://ruib.in/][没事瞎扯]] :: 网上冲浪偶遇，记录一下
