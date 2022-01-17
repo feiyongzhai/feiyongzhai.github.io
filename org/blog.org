@@ -8,6 +8,20 @@
 不积跬步，无以至千里；不积小流，无以成江海！
 #+end_quote
 
+* 给自己的网站添加 favicon 图标
+CREATE: <2022-01-17 Mon 14:37>
+
+只要在网页的 head 部分添加以下代码就好了，你可以给每个网页设置不同的
+favicon。（我这里说的只是其中的一种方法，其他方法可以参考[[https://blog.csdn.net/guzhao593/article/details/93972193][这里]]。）
+
+#+begin_src html
+  <link rel="shortcut icon" href="图标地址" type="image/x-icon" />
+  <!-- 或者如下，我用的是这个 -->
+  <link rel="shortcut icon" href="图标地址" />
+#+end_src
+
+鸣谢：本网站现在用的 favicon 来自[[http://www.mrven.com/node/103][这里]]。
+
 * 终于还是用上了 =org-publish= ，备份一下参考链接
 CREATE: <2022-01-16 Sun 20:23>
 
