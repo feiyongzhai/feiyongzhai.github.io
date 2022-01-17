@@ -5,7 +5,7 @@
 #+OPTIONS: toc:nil
 
 #+begin_quote
-不积跬步，何以至千里；不积小流，何以汇江河！
+不积跬步，无以至千里；不积小流，无以成江海！
 #+end_quote
 
 * 终于还是用上了 =org-publish= ，备份一下参考链接
