@@ -23,7 +23,6 @@ Emacs 应该是你的工具，而不是你的玩具！
 ** 书签
 
 - [[https://zetcode.com/gui/pyqt5/][PyQt5教程]]   
-- [[https://manateelazycat.github.io/][懒猫博客]]
 - [[https://emacstalk.github.io/][EmacsTalk]]
 - [[https://emacs-china.org/][EmacsChina]]
 - [[file:links.org][Emacser的博客]]
