@@ -2,6 +2,7 @@
 
 - [[file:404.org][404]]
 - [[file:blog.org][Emacs]]
+- [[file:warehouse.org][仓库]]
 - [[file:about.org][关于我]]
 - [[file:test.org][图片测试]]
 - [[file:index.org][我的小仓库]]
