@@ -10,3 +10,7 @@
 - [[https://ss.netnr.com/wallpaper][在线壁纸 NET牛人]]
 - [[http://simpledesktops.com/][Simple Desktops]]
 - [[https://www.wallpaperup.com/][WallpaperUP]]
+
+* 关于Emacs
+- [[http://smacs.github.io/elisp/][Emacs Lisp 简明教程 - 水木社区Emacs版]]
+- [[https://www.slideshare.net/yukihiro_matz/how-emacs-changed-my-life][How Emacs changed my life - Ruby创始人]]
