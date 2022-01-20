@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-01-18 Tue 15:41 -->
+<!-- 2022-01-20 Thu 20:53 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>日志</title>
@@ -238,9 +238,60 @@
 </p>
 </blockquote>
 
-<div id="outline-container-org82d78b7" class="outline-2">
-<h2 id="org82d78b7"><span class="section-number-2">1</span> 给自己的网站添加 favicon 图标</h2>
+<div id="outline-container-org1ac4b02" class="outline-2">
+<h2 id="org1ac4b02"><span class="section-number-2">1</span> 快速在相同的 Major-mode 的 Buffer 中切换</h2>
 <div class="outline-text-2" id="text-1">
+<p>
+CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-20 Thu 20:30&gt;</span></span>
+</p>
+
+<p>
+今天在使用 <a href="https://www.gnu.org/software/emacs/manual/html_mono/eshell.html">Eshell</a> 的时候发现了一个需求：我想快速在几个已打开的 Eshell
+中切换。搜了一下，发现了<a href="https://emacs.stackexchange.com/questions/65094/how-to-quickly-cycles-through-buffers-of-the-same-major-mode-as-current-one">这个</a>。里面提到了一个 Emacs 的内置包 <code>bs.el</code>
+</p>
+
+<p>
+我便去尝试了一下，简单配置后发现可以满足我的需求。分享给大家
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(global-set-key (kbd "C-x C-b") 'bs-show)
+(setq bs-configurations
+      '(("all" nil nil nil nil nil)
+	("files" nil nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
+	("eshell" nil nil nil fei-bs-not-eshell bs-sort-buffer-interns-are-last)
+	("files-and-scratch" "^\\*scratch\\*$" nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
+	("all-intern-last" nil nil nil nil bs-sort-buffer-interns-are-last))
+      )
+
+(defun fei-bs-not-eshell (buf)
+  (with-current-buffer buf (not (eq major-mode 'eshell-mode))))
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgeac016a" class="outline-3">
+<h3 id="orgeac016a"><span class="section-number-3">1.1</span> 题外话</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+如果你已经有了一定的 Emacs 使用经验，你可能将 <code>C-x C-b</code> 绑定到了
+<code>ibuffer</code> 上面，我之前也是这么做，但是我在使用 Emacs 的很长一段时间里，
+发现 <code>ibuffer</code> 一直用不起来。倒是这个 <code>bs</code> 我一下子就 get 到了他的设计
+想法，很快就用起来了。 <code>ibuffer</code> 给我的感觉是：设计的很原始，虽说提供
+了很多配置项，但往往是配置了很久结果都不如意，我之前每次打开 <code>ibuffer</code>
+之后就直接推出了，完全用不起来，哈哈哈。
+</p>
+
+<p>
+如果你也和我一样，只是想要一个快速切换 Buffer 的机制，我很推荐你使用一
+下 <code>bs</code> 这个内置包！
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org99a954a" class="outline-2">
+<h2 id="org99a954a"><span class="section-number-2">2</span> 给自己的网站添加 favicon 图标</h2>
+<div class="outline-text-2" id="text-2">
 <p>
 CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-17 Mon 14:37&gt;</span></span>
 </p>
@@ -263,9 +314,9 @@ favicon。（我这里说的只是其中的一种方法，其他方法可以参�
 </div>
 </div>
 
-<div id="outline-container-orge3edaab" class="outline-2">
-<h2 id="orge3edaab"><span class="section-number-2">2</span> 终于还是用上了 <code>org-publish</code> ，备份一下参考链接</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-orgb7faec0" class="outline-2">
+<h2 id="orgb7faec0"><span class="section-number-2">3</span> 终于还是用上了 <code>org-publish</code> ，备份一下参考链接</h2>
+<div class="outline-text-2" id="text-3">
 <p>
 CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-16 Sun 20:23&gt;</span></span>
 </p>
@@ -285,9 +336,9 @@ CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-16 S
 </ul>
 </div>
 </div>
-<div id="outline-container-org6fe6ea2" class="outline-2">
-<h2 id="org6fe6ea2"><span class="section-number-2">3</span> Org publish</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-orgbafd97b" class="outline-2">
+<h2 id="orgbafd97b"><span class="section-number-2">4</span> Org publish</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 一开始是想给我的博客主页添加一个导航栏的（后来搜索发现准确的名字叫
 preamble），然后就发现了 <code>org-publish</code> 这个东西
@@ -319,9 +370,9 @@ preamble），然后就发现了 <code>org-publish</code> 这个东西
 </div>
 </div>
 
-<div id="outline-container-orgc8a4968" class="outline-2">
-<h2 id="orgc8a4968"><span class="section-number-2">4</span> <a href="https://www.linuxmi.com/ubuntu-20-04-gnu-emacs-27-1.html">编译安装</a>svg支持</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-orgd68314b" class="outline-2">
+<h2 id="orgd68314b"><span class="section-number-2">5</span> <a href="https://www.linuxmi.com/ubuntu-20-04-gnu-emacs-27-1.html">编译安装</a>svg支持</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 我用的Linux Mint 20，主要是需要安装下面的<a href="https://ubuntuforums.org/showthread.php?t=2215649">lib</a>
 </p>
@@ -334,7 +385,7 @@ preamble），然后就发现了 <code>org-publish</code> 这个东西
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: yongfeizhai</p>
-<p class="date">Created: 2022-01-18 Tue 15:41</p>
+<p class="date">Created: 2022-01-20 Thu 20:53</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

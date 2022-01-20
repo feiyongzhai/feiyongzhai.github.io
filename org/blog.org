@@ -8,6 +8,38 @@
 不积跬步，无以至千里；不积小流，无以成江海！
 #+end_quote
 
+* 快速在相同的 Major-mode 的 Buffer 中切换
+CREATE: <2022-01-20 Thu 20:30>
+
+今天在使用 [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][Eshell]] 的时候发现了一个需求：我想快速在几个已打开的 Eshell
+中切换。搜了一下，发现了[[https://emacs.stackexchange.com/questions/65094/how-to-quickly-cycles-through-buffers-of-the-same-major-mode-as-current-one][这个]]。里面提到了一个 Emacs 的内置包 =bs.el=
+
+我便去尝试了一下，简单配置后发现可以满足我的需求。分享给大家
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-x C-b") 'bs-show)
+  (setq bs-configurations
+        '(("all" nil nil nil nil nil)
+          ("files" nil nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
+          ("eshell" nil nil nil fei-bs-not-eshell bs-sort-buffer-interns-are-last)
+          ("files-and-scratch" "^\\*scratch\\*$" nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
+          ("all-intern-last" nil nil nil nil bs-sort-buffer-interns-are-last))
+        )
+
+  (defun fei-bs-not-eshell (buf)
+    (with-current-buffer buf (not (eq major-mode 'eshell-mode))))
+#+end_src
+
+** 题外话
+如果你已经有了一定的 Emacs 使用经验，你可能将 =C-x C-b= 绑定到了
+=ibuffer= 上面，我之前也是这么做，但是我在使用 Emacs 的很长一段时间里，
+发现 =ibuffer= 一直用不起来。倒是这个 =bs= 我一下子就 get 到了他的设计
+想法，很快就用起来了。 =ibuffer= 给我的感觉是：设计的很原始，虽说提供
+了很多配置项，但往往是配置了很久结果都不如意，我之前每次打开 =ibuffer=
+之后就直接推出了，完全用不起来，哈哈哈。
+
+如果你也和我一样，只是想要一个快速切换 Buffer 的机制，我很推荐你使用一
+下 =bs= 这个内置包！
 * 给自己的网站添加 favicon 图标
 CREATE: <2022-01-17 Mon 14:37>
 
