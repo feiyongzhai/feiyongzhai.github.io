@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2022-01-20 Thu 20:53 -->
+<!-- 2022-01-23 Sun 17:03 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>日志</title>
@@ -220,6 +220,7 @@
 </head>
 <body>
 <div id="preamble" class="status">
+<!-- -*- coding: utf-8 -*- -->
 <div id="navList">
 <ul>
 <li><a href="./index.html">首页</a></li>
@@ -238,9 +239,46 @@
 </p>
 </blockquote>
 
-<div id="outline-container-org1ac4b02" class="outline-2">
-<h2 id="org1ac4b02"><span class="section-number-2">1</span> 快速在相同的 Major-mode 的 Buffer 中切换</h2>
+<div id="outline-container-org7da7394" class="outline-2">
+<h2 id="org7da7394"><span class="section-number-2">1</span> 发现一个现象：使用键盘和鼠标的第一关注点是不一样的（光标还是内容）</h2>
 <div class="outline-text-2" id="text-1">
+<p>
+CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-21 Fri 23:56&gt;</span></span>
+</p>
+
+<p>
+当我在 Emacs 使用键盘的时候，我第一个找的东西是光标（这是一个下意识的
+动作），而当我用鼠标的时候（别问我为什么用 Emacs 还要去用鼠标？这并不
+冲突！），我并不会关注光标在什么地方，因为我用鼠标一点我所看的位置，光
+标将会立刻跳转到这个地方，所以我在使用鼠标的时候关注的是页面的内容。
+</p>
+
+<p>
+这个小小的差异是我今天在使用 Ibuffer 的时候发现的（用鼠标），因为之前
+键盘驱动地使用 Ibuffer 的时候，我第一时间（下意识）会去找光标，然后再
+去看 Ibuffer 给我呈现的内容（当我的视觉中心是光标的时候，我是看不清楚
+内容的，因为我的关注点并不在内容上面），所以在这样的观察前提下，我会觉
+得 Ibuffer 的内容很不明显，总是会出现不知道我在哪里的情况。我想这应该
+是我 Ibuffer用不起来的一个重要原因，之前在 Bs 和 Ibuffer 对比的时候，
+还出现了错误归因：说 Ibuffer 用不起来是其设计的原因。
+</p>
+
+<p>
+当然不止 Ibuffer ，使用 Dired 的时候也会因为找光标时常出现不知道自己在
+哪里的情况。
+</p>
+
+<p>
+这是我在使用 Emacs 的时候出现的问题，我以后会去注意自己的关注的内容到
+底是什么，可能会更自如地去使用 Emacs 吧。同时也希望我的这次分享能给读
+者一点小小的启发 ^_^
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1ac4b02" class="outline-2">
+<h2 id="org1ac4b02"><span class="section-number-2">2</span> 快速在相同的 Major-mode 的 Buffer 中切换</h2>
+<div class="outline-text-2" id="text-2">
 <p>
 CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-20 Thu 20:30&gt;</span></span>
 </p>
@@ -271,8 +309,8 @@ CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-20 T
 </div>
 
 <div id="outline-container-orgeac016a" class="outline-3">
-<h3 id="orgeac016a"><span class="section-number-3">1.1</span> 题外话</h3>
-<div class="outline-text-3" id="text-1-1">
+<h3 id="orgeac016a"><span class="section-number-3">2.1</span> 题外话</h3>
+<div class="outline-text-3" id="text-2-1">
 <p>
 如果你已经有了一定的 Emacs 使用经验，你可能将 <code>C-x C-b</code> 绑定到了
 <code>ibuffer</code> 上面，我之前也是这么做，但是我在使用 Emacs 的很长一段时间里，
@@ -290,8 +328,8 @@ CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-20 T
 </div>
 </div>
 <div id="outline-container-org99a954a" class="outline-2">
-<h2 id="org99a954a"><span class="section-number-2">2</span> 给自己的网站添加 favicon 图标</h2>
-<div class="outline-text-2" id="text-2">
+<h2 id="org99a954a"><span class="section-number-2">3</span> 给自己的网站添加 favicon 图标</h2>
+<div class="outline-text-2" id="text-3">
 <p>
 CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-17 Mon 14:37&gt;</span></span>
 </p>
@@ -315,8 +353,8 @@ favicon。（我这里说的只是其中的一种方法，其他方法可以参�
 </div>
 
 <div id="outline-container-orgb7faec0" class="outline-2">
-<h2 id="orgb7faec0"><span class="section-number-2">3</span> 终于还是用上了 <code>org-publish</code> ，备份一下参考链接</h2>
-<div class="outline-text-2" id="text-3">
+<h2 id="orgb7faec0"><span class="section-number-2">4</span> 终于还是用上了 <code>org-publish</code> ，备份一下参考链接</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-16 Sun 20:23&gt;</span></span>
 </p>
@@ -337,8 +375,8 @@ CREATE: <span class="timestamp-wrapper"><span class="timestamp">&lt;2022-01-16 S
 </div>
 </div>
 <div id="outline-container-orgbafd97b" class="outline-2">
-<h2 id="orgbafd97b"><span class="section-number-2">4</span> Org publish</h2>
-<div class="outline-text-2" id="text-4">
+<h2 id="orgbafd97b"><span class="section-number-2">5</span> Org publish</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 一开始是想给我的博客主页添加一个导航栏的（后来搜索发现准确的名字叫
 preamble），然后就发现了 <code>org-publish</code> 这个东西
@@ -371,8 +409,8 @@ preamble），然后就发现了 <code>org-publish</code> 这个东西
 </div>
 
 <div id="outline-container-orgd68314b" class="outline-2">
-<h2 id="orgd68314b"><span class="section-number-2">5</span> <a href="https://www.linuxmi.com/ubuntu-20-04-gnu-emacs-27-1.html">编译安装</a>svg支持</h2>
-<div class="outline-text-2" id="text-5">
+<h2 id="orgd68314b"><span class="section-number-2">6</span> <a href="https://www.linuxmi.com/ubuntu-20-04-gnu-emacs-27-1.html">编译安装</a>svg支持</h2>
+<div class="outline-text-2" id="text-6">
 <p>
 我用的Linux Mint 20，主要是需要安装下面的<a href="https://ubuntuforums.org/showthread.php?t=2215649">lib</a>
 </p>
@@ -385,7 +423,7 @@ preamble），然后就发现了 <code>org-publish</code> 这个东西
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: yongfeizhai</p>
-<p class="date">Created: 2022-01-20 Thu 20:53</p>
+<p class="date">Created: 2022-01-23 Sun 17:03</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
