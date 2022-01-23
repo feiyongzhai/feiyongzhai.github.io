@@ -31,7 +31,7 @@ CREATE: <2022-01-21 Fri 23:56>
 底是什么，可能会更自如地去使用 Emacs 吧。同时也希望我的这次分享能给读
 者一点小小的启发 ^_^
 
-* 快速在相同的 Major-mode 的 Buffer 中切换
+* 快速在相同 Major-mode 的 Buffer 中切换
 CREATE: <2022-01-20 Thu 20:30>
 
 今天在使用 [[https://www.gnu.org/software/emacs/manual/html_mono/eshell.html][Eshell]] 的时候发现了一个需求：我想快速在几个已打开的 Eshell
