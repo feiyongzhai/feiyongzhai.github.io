@@ -2,6 +2,7 @@
 # #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
 #+DESCRIPTION: 不想把这些放到浏览器的书签里面，放到这个地方挺合适的
 
+- [[https://dirtysalt.github.io][dirtysalt]] :: 之前找 org-mode 搭建博客的教程碰到的，很佩服他这么多年一直坚持写博客
 - [[https://xiaoguo.net/][小过的布拉格]] :: 从他的主页拿了他的 =css= 文件，非常感谢！
 - [[https://manateelazycat.github.io/][懒猫博客]] :: 以及他的[[https://www.emacswiki.org/emacs/AndyStewart][EmacsWiki主页]] 
 - [[https://oremacs.com/][(or emacs · irrelevant)]] :: Ivy/Swiper/Counsel 等众多 Emacs 插件的作者， Emacs 大牛

@@ -13,17 +13,12 @@ Emacs 应该是你的工具，而不是你的玩具！
 - [[https://github.com/feiyongzhai/.emacs.d][Emacs配置]]
 - [[file:404.org][404]]
 
-** 别人的配置
-
-- [[https://github.com/manateelazycat/lazycat-emacs][Manateelazycat]]
-- [[https://github.com/DogLooksGood/dogEmacs][DogLooksGood]]
-- [[https://github.com/MatthewZMD/.emacs.d][MatthewZMD]]
-- [[https://github.com/SteamedFish/emacszh-tg-configs][SteamedFish]]
-
 ** 书签
 
-- [[https://zetcode.com/gui/pyqt5/][PyQt5教程]]   
+- [[https://zetcode.com/gui/pyqt5/][PyQt5教程]]
 - [[https://emacstalk.github.io/][EmacsTalk]]
 - [[https://emacs-china.org/][EmacsChina]]
 - [[file:links.org][Emacser的博客]]
 - [[https://github.com/manateelazycat/emacs-application-framework][EAF GITHUB仓库]]
+- [[https://github.com/DogLooksGood/dogEmacs][DogLooksGood配置]]
+- [[https://github.com/manateelazycat/lazycat-emacs][Manateelazycat配置]]
