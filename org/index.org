@@ -15,7 +15,7 @@
 
 ** 书签
 
-- [[https://zetcode.com/gui/pyqt5/][PyQt5教程]]
+- [[https://pymupdf.readthedocs.io/en/latest/][PyMuPDF文档]]
 - [[https://emacstalk.github.io/][EmacsTalk]]
 - [[https://emacs-china.org/][EmacsChina]]
 - [[file:links.org][Emacser的博客]]
