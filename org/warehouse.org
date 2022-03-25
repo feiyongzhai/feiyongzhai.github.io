@@ -7,6 +7,7 @@
 
 * 教程
 - [[https://zetcode.com/gui/pyqt5/][PyQt5教程]]
+- [[http://docs.30c.org/dosbat/][Windows 批处理脚本学习教程]]
 
 * 自用壁纸链接
 - [[https://bz.zzzmh.cn/index][极简壁纸]]
