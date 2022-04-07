@@ -10,7 +10,14 @@
 - [[https://zetcode.com/gui/pyqt5/][PyQt5教程]]
 - [[https://graphviz.org/][Graphviz(dot画图)]]
 - [[https://talk.linuxtoy.org/cli-tips/#1][高效使用 Linux 命令行]]
+
+** bat(Windows)
+- [[https://www.w3cschool.cn/dosmlxxsc1/wvqyr9.html][bat 批处理教程_w3cschool]]
 - [[http://docs.30c.org/dosbat/][Windows 批处理脚本学习教程]]
+
+** CPP
+- [[https://en.cppreference.com/w/cpp/header][C++ Standard Library headers - cppreference.com]]
+- [[https://www.runoob.com/cplusplus/cpp-useful-resources.html][C++ 有用的资源 | 菜鸟教程]]
 
 ** Shell
 - [[https://yanbin.blog/bash-zsh-call-emacs-vim-edit-current-command/][Bash/Zsh 下调用 Emacs/Vim 编辑当前命令]]
@@ -29,6 +36,10 @@
 
 ** Manjaro
 - [[https://zhuanlan.zhihu.com/p/37924844][在Manjaro上配置国内源 - 知乎]]
+
+** Misc
+- [[http://shouce.jb51.net/linux-from-scratch-6.1.1/chapter07/inputrc.html][7.8. 创建 /etc/inputrc 文件《Linux 彻底定制指南》［翻译：金步国］]]
+- [[http://shouce.jb51.net/][手册大全（脚本之家）]]
 
 * 开源镜像
 - [[http://mirrors.163.com/][欢迎访问网易开源镜像站]]
@@ -69,4 +80,14 @@
 - [[https://christiantietze.de/posts/2021/06/emacs-center-window-single-function/][Single Function to Center Emacs Window on Screen]]
 - [[https://zhuanlan.zhihu.com/p/426804596][EAF pdf-viewer 助力文献阅读 - 知乎]]
 - [[https://nschum.de/src/emacs/][An Emacser's Emacs extensions]]
+
+* Misc
+- [[http://react.xhup.club/search][小鹤音形编码查询]]
+** Linux
+- [[https://blog.csdn.net/createchance/article/details/54343325][Debian Linux包管理机制_createchance的博客-CSDN博客_debian 包管理]]
+- [[https://distrowatch.com/][DistroWatch]]
+
+** 字符和字符编码
+- [[https://sethmlarson.dev/blog/utf-8][How does UTF-8 turn “😂” into “F09F9882”?]]
+- [[https://www.cnblogs.com/skynet/archive/2011/05/03/2035105.html][字符集和字符编码（Charset & Encoding） - 吴秦 - 博客园]]
 
