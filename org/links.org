@@ -15,4 +15,5 @@
 - [[https://chriszheng.science/][M-x Chris-An-Emacser]] :: 有个一句话说Elisp系列
 - [[http://zwz.github.io/][zwz | zwz's]] :: 网上冲浪偶遇，记录一下
 - [[https://ruib.in/][没事瞎扯]] :: 网上冲浪偶遇，记录一下
+- [[https://freemind.pluskid.org/][Free Mind]] :: 相见于 [[https://emacs-china.org/t/pluskid/20610][分享：Pluskid 阅读关于开源运动本身的观察和理解 - 闲聊灌水 - Emacs China]]
 - [[https://zihao.llk.moe/][Citreu]] :: Emacs China 经常看他发言，好像还是医学生，好厉害
