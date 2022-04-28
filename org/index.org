@@ -11,14 +11,15 @@
 
 - [[https://github.com/feiyongzhai][GITHUB首页]]
 - [[https://github.com/feiyongzhai/.emacs.d][Emacs配置]]
+- [[https://github.com/feiyongzhai/feiyongzhai.github.io][博客仓库]]
 - [[file:404.org][404]]
 
 ** 书签
 
-- [[https://pymupdf.readthedocs.io/en/latest/][PyMuPDF文档]]
-- [[https://emacstalk.github.io/][EmacsTalk]]
-- [[https://emacs-china.org/][EmacsChina]]
-- [[file:links.org][Emacser的博客]]
-- [[https://github.com/manateelazycat/emacs-application-framework][EAF GITHUB仓库]]
-- [[https://github.com/DogLooksGood/dogEmacs][DogLooksGood配置]]
-- [[https://github.com/manateelazycat/lazycat-emacs][Manateelazycat配置]]
+- [[file:links.org][Emacsers]] 🤠
+- [[https://emacstalk.github.io/][EmacsTalk]] 📻
+- [[https://emacs-china.org/][EmacsChina]] 🇨🇳
+- [[https://git.savannah.gnu.org/cgit/emacs.git][Emacs Repo]] 🛖
+- [[https://git.savannah.gnu.org/cgit/emacs/org-mode.git/][Orgmode Repo]] 🛖
+- [[https://pymupdf.readthedocs.io/en/latest/][PyMuPDF 文档]] 📑
+
