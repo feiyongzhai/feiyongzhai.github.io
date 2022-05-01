@@ -9,8 +9,9 @@
 
 ** 我的
 
-- [[https://github.com/feiyongzhai][GITHUB首页]]
-- [[https://github.com/feiyongzhai/.emacs.d][Emacs配置]]
+- [[https://github.com/feiyongzhai?tab=stars][Github Stars]]
+- [[https://github.com/feiyongzhai][Github 首页]]
+- [[https://github.com/feiyongzhai/.emacs.d][Emacs 配置]]
 - [[https://github.com/feiyongzhai/feiyongzhai.github.io][博客仓库]]
 - [[file:404.org][404]]
 
