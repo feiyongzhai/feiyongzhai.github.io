@@ -7,16 +7,8 @@
 Emacs 应该是你的工具，而不是你的所有！
 #+end_quote
 
-** 我的
-
-- [[https://github.com/feiyongzhai?tab=stars][Github Stars]]
-- [[https://github.com/feiyongzhai][Github 首页]]
-- [[https://github.com/feiyongzhai/.emacs.d][Emacs 配置]]
-- [[https://github.com/feiyongzhai/feiyongzhai.github.io][博客仓库]]
-- [[file:404.org][404]]
-
 ** 书签
-
+- [[https://github.com/feiyongzhai?tab=stars][Github Stars]] ⭐
 - [[file:links.org][Emacsers]] 🤠
 - [[https://emacstalk.github.io/][EmacsTalk]] 📻
 - [[https://git.savannah.gnu.org/cgit/emacs.git][Emacs Repo]] 🛖
