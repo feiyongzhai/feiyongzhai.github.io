@@ -3,15 +3,11 @@
 # #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
 #+OPTIONS: toc:nil
 
-#+begin_quote
-Emacs 应该是你的工具，而不是你的所有！
-#+end_quote
-
 ** 书签
-- [[https://github.com/feiyongzhai?tab=stars][Github Stars]] ⭐
-- [[file:links.org][Emacsers]] 🤠
-- [[https://emacstalk.github.io/][EmacsTalk]] 📻
-- [[https://git.savannah.gnu.org/cgit/emacs.git][Emacs Repo]] 🛖
-- [[https://git.savannah.gnu.org/cgit/emacs/org-mode.git/][Orgmode Repo]] 🛖
-- [[https://pymupdf.readthedocs.io/en/latest/][PyMuPDF 文档]] 📑
+- ⭐ [[https://github.com/feiyongzhai?tab=stars][Github Stars]]
+- 🤠 [[file:links.org][Emacsers]]
+- 📻 [[https://emacstalk.github.io/][EmacsTalk]]
+- 🛖 [[https://git.savannah.gnu.org/cgit/emacs.git][Emacs Repo]]
+- 🛖 [[https://git.savannah.gnu.org/cgit/emacs/org-mode.git/][Orgmode Repo]]
+- 📑 [[https://pymupdf.readthedocs.io/en/latest/][PyMuPDF 文档]]
 
