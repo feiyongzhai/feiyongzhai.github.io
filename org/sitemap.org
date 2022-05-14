@@ -6,5 +6,6 @@
 - [[file:about.org][关于我]]
 - [[file:test.org][图片测试]]
 - [[file:index.org][我的小博客]]
+- [[file:extract.org][摘抄]]
 - [[file:blog.org][日志]]
 - [[file:others.org][每日一文文章备份]]
