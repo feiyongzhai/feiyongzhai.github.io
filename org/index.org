@@ -9,5 +9,6 @@
 - 📻 [[https://emacstalk.github.io/][EmacsTalk]]
 - 🛖 [[https://git.savannah.gnu.org/cgit/emacs.git][Emacs Repo]]
 - 🛖 [[https://git.savannah.gnu.org/cgit/emacs/org-mode.git/][Orgmode Repo]]
+- 📑 [[https://github.com/labuladong/fucking-algorithm][算法(数据结构)]]
 - 📑 [[https://pymupdf.readthedocs.io/en/latest/][PyMuPDF 文档]]
 
