@@ -1,5 +1,0 @@
-# -*- coding: utf-8 -*-
-#+TITLE: 图片测试
-
-测试图片显示
-[[file:images/2022-01-16_14-59-34_screenshot.png]]

@@ -1,7 +1,0 @@
-# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../static/css/style.css"/>
-404 not found
-
-#+begin_quote
-每一段结束，都是一段新的开始！
-#+end_quote
-
