@@ -6,7 +6,7 @@
 <!-- 2023-02-22 周三 15:33 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>&lrm;</title>
+<title>两个整数最小公倍数相关定理的证明</title>
 <meta name="generator" content="Org Mode" />
 <style>
   #content { max-width: 60em; margin: auto; }
@@ -210,15 +210,98 @@
 </div>
 </div>
 <div id="content" class="content">
+<h1 class="title">两个整数最小公倍数相关定理的证明</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org1e3d09b">1. 设两个互质的数分别为 a，b ，证明其最小公倍数为 ab</a></li>
+<li><a href="#org9fdc627">2. 设 a, b 为整数。其最大公约数为 s. 则其最小公倍数为 ab/s</a></li>
+</ul>
+</div>
+</div>
 <p>
-404 not found
+文章仅供备忘，所以排版格式不是很规范
 </p>
 
-<blockquote>
+<div id="outline-container-org1e3d09b" class="outline-2">
+<h2 id="org1e3d09b"><span class="section-number-2">1.</span> 设两个互质的数分别为 a，b ，证明其最小公倍数为 ab</h2>
+<div class="outline-text-2" id="text-1">
 <p>
-每一段结束，都是一段新的开始！
+反证：假设存在 K &lt; ab 为 a, b 的最小公倍数。
+则 K/a，K/b 为整数，不妨设为 m,n。结合 K &lt; ab 的假设。有：
 </p>
-</blockquote>
+
+<p>
+m = K/a &lt; ab/a = b , n = K/b &lt; ab/b &lt; b
+</p>
+
+<p>
+又
+</p>
+
+<p>
+a · m = a · K/a = K = K/b · b = n · b
+</p>
+
+<p>
+得
+</p>
+
+<p>
+am/b = n
+</p>
+
+<p>
+由于 a，b 互质，且 m &lt; b. 所以等式左边不为整数。而等式右边是整数。
+</p>
+
+<p>
+矛盾，故假设不成立。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9fdc627" class="outline-2">
+<h2 id="org9fdc627"><span class="section-number-2">2.</span> 设 a, b 为整数。其最大公约数为 s. 则其最小公倍数为 ab/s</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+设 a = sx, b = sy
+</p>
+
+<p>
+反证：假设存在 K &lt; ab/s = sxy 为 a, b 的最小公倍数
+则 K/a ，K/b 为整数，不妨设为 m,n ，则有
+</p>
+
+<p>
+m = K/a &lt; sxy/sx = y
+n = K/b &lt; sxy/sy = x
+</p>
+
+<p>
+且
+</p>
+
+<p>
+a · m = a · K/a = K = K/b · b = n · b
+</p>
+
+<p>
+» sxm = am = nsy
+» xm=ny
+» m = ny/x
+</p>
+
+<p>
+因为 x,y 互质，且 n &lt; x, 右边不为整数。而左边为整数。
+</p>
+
+<p>
+矛盾，故假设不成立。
+</p>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="date">Created: 2023-02-22 周三 15:33</p>
