@@ -3,10 +3,11 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-03-16 周四 19:12 -->
+<!-- 2023-05-26 五 21:34 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>快速在相同 Major-mode 的 Buffer 中切换</title>
+<meta name="author" content="yongfeizhai" />
 <meta name="generator" content="Org Mode" />
 <style>
   #content { max-width: 60em; margin: auto; }
@@ -216,7 +217,7 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orged3f52c">1. 题外话</a></li>
+<li><a href="#orgb2aa4f6">1. 题外话</a></li>
 </ul>
 </div>
 </div>
@@ -233,10 +234,10 @@
 <pre class="src src-emacs-lisp">(global-set-key (kbd "C-x C-b") 'bs-show)
 (setq bs-configurations
       '(("all" nil nil nil nil nil)
-	("files" nil nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
-	("eshell" nil nil nil fei-bs-not-eshell bs-sort-buffer-interns-are-last)
-	("files-and-scratch" "^\\*scratch\\*$" nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
-	("all-intern-last" nil nil nil nil bs-sort-buffer-interns-are-last))
+        ("files" nil nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
+        ("eshell" nil nil nil fei-bs-not-eshell bs-sort-buffer-interns-are-last)
+        ("files-and-scratch" "^\\*scratch\\*$" nil nil bs-visits-non-file bs-sort-buffer-interns-are-last)
+        ("all-intern-last" nil nil nil nil bs-sort-buffer-interns-are-last))
       )
 
 (defun fei-bs-not-eshell (buf)
@@ -244,8 +245,8 @@
 </pre>
 </div>
 
-<div id="outline-container-orged3f52c" class="outline-2">
-<h2 id="orged3f52c"><span class="section-number-2">1.</span> 题外话</h2>
+<div id="outline-container-orgb2aa4f6" class="outline-2">
+<h2 id="orgb2aa4f6"><span class="section-number-2">1.</span> 题外话</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 如果你已经有了一定的 Emacs 使用经验，你可能将 <code>C-x C-b</code> 绑定到了
@@ -260,7 +261,8 @@
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="date">Created: 2023-03-16 周四 19:12</p>
+<p class="author">Author: yongfeizhai</p>
+<p class="date">Created: 2023-05-26 五 21:34</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
