@@ -29,11 +29,13 @@
             <input type="button" id="searchbtn" value="搜索" size="100" />
             <input type="button" id="btn_bing" value="bing" />
             <input type="button" id="btn_guge" value="Google" />
+            <input type="button" id="btn_blbl" value="bilibili" />
             <p id="searchcontent">输入内容占位符</p>
             <script>
              const btn = document.querySelector('input#searchbtn');
              const btn_bing = document.querySelector('input#btn_bing');
              const btn_guge = document.querySelector('input#btn_guge');
+             const btn_blbl = document.querySelector('input#btn_blbl');
              const par = document.querySelector('p#searchcontent');
              const sch = document.querySelector('input#name');
 
@@ -45,6 +47,10 @@
              btn_guge.addEventListener('click', function(e) {
                  par.textContent = "谷歌搜索：" + sch.value;
                  window.open("https://www.google.com/search?ie=utf-8&q=" + sch.value);
+             });
+             btn_blbl.addEventListener('click', function(e) {
+                 par.textContent = "Bilibili：" + sch.value;
+                 window.open("https://search.bilibili.com/all?keyword=" + sch.value);
              });
              sch.addEventListener('keydown', function(e) {
                  if (event.keyCode == 13) {
