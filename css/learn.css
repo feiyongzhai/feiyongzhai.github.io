@@ -18,6 +18,10 @@ input, label {
     margin: 0.4rem 0;
 }
 
+input#name {
+    height: 2rem;
+}
+
 input[type='button'] {
     height: 2rem;
     width: 5rem;
