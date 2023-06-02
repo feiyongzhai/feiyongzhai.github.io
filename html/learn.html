@@ -19,5 +19,36 @@
 	</div>
 	<h1>前端操练场</h1>
 	<p>用来测试一些前端知识</p>
+        <div>
+            <label for="name">搜索框(4 to 8 字符):</label>
+
+            <input type="text" id="name" name="name" required
+                   minlength="4" maxlength="8" size="10">
+            <input type="button" value="搜索" />
+        </div>
+        <HR SIZE=5 color=#987cb9>
+        <div>
+            <form>
+                <input class="btn" type="button" value="开动机器" accesskey="s" />
+            </form>
+            
+            <p>机器已经停下了。</p>
+            <script>
+             const button = document.querySelector('input.btn');
+             const paragraph = document.querySelector('form~p');
+
+             button.addEventListener('click', updateButton);
+
+             function updateButton() {
+                 if (button.value === '开动机器') {
+                     button.value = '停止机器';
+                     paragraph.textContent = '机器启动了！';
+                 } else {
+                     button.value = '开动机器';
+                     paragraph.textContent = '机器已经停下了。';
+                 }
+             }
+            </script>
+        </div>
     </body>
 </html>
