@@ -19,19 +19,53 @@
 	</div>
 	<h1>前端操练场</h1>
 	<p>用来测试一些前端知识</p>
+        <h2>输入框和按钮</h2>
         <div>
             <label for="name">搜索框(4 to 8 字符):</label>
 
             <input type="text" id="name" name="name" required
-                   minlength="4" maxlength="8" size="10">
-            <input type="button" value="搜索" />
+                   minlength="8" maxlength="20" size="18"
+                   placeholder="请输入你搜索的内容" >
+            <input type="button" id="searchbtn" value="搜索" size="100" />
+            <input type="button" id="btn_bing" value="bing" />
+            <input type="button" id="btn_guge" value="Google" />
+            <p id="searchcontent">输入内容占位符</p>
+            <script>
+             const btn = document.querySelector('input#searchbtn');
+             const btn_bing = document.querySelector('input#btn_bing');
+             const btn_guge = document.querySelector('input#btn_guge');
+             const par = document.querySelector('p#searchcontent');
+             const sch = document.querySelector('input#name');
+
+             btn.addEventListener('click', updatePar);
+             btn_bing.addEventListener('click', function(e) {
+                 par.textContent = "必应搜索：" + sch.value;
+                 window.open("https://www.bing.com/search?q=" + sch.value);
+             });
+             btn_guge.addEventListener('click', function(e) {
+                 par.textContent = "谷歌搜索：" + sch.value;
+                 window.open("https://www.google.com/search?ie=utf-8&q=" + sch.value);
+             });
+             sch.addEventListener('keydown', function(e) {
+                 if (event.keyCode == 13) {
+                     /* console.log("https://www.baidu.com/s?wd=" + sch.value); */
+                     window.open("https://www.baidu.com/s?wd=" + sch.value);
+                 }
+             });
+
+             function updatePar() {
+                 par.textContent = "百度搜索：" + sch.value;
+                 window.open("https://www.baidu.com/s?wd=" + sch.value, "_self");/* _self 表示在当前标签打开 */
+             }
+            </script>
         </div>
         <HR SIZE=5 color=#987cb9>
+        <h2>按钮开关</h2>
         <div>
             <form>
-                <input class="btn" type="button" value="开动机器" accesskey="s" />
+                <input class="btn" type="button" value="开动机器" accesskey="s" /><!-- alt+s 可以触发这个 button 的 click -->
             </form>
-            
+
             <p>机器已经停下了。</p>
             <script>
              const button = document.querySelector('input.btn');
