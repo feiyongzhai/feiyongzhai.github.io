@@ -20,7 +20,7 @@
 	<h1>前端操练场</h1>
         <h2>输入框和按钮</h2>
         <div>
-            <label for="name">搜索框(4 to 8 字符):</label>
+            <label for="name">搜索框:</label>
 
             <input type="text" id="name" name="name" required
                    minlength="8" maxlength="100" size="50"
@@ -30,16 +30,22 @@
             <input type="button" id="btn_bing" value="bing(b)" accesskey="b" />
             <input type="button" id="btn_guge" value="Google(g)" accesskey="g" />
             <input type="button" id="btn_blbl" value="bilibili(l)" accesskey="l" />
+            <input type="button" id="btn_zhihu" value="zhihu(z)" accesskey="z" />
             <p id="searchcontent">输入内容占位符</p>
             <script>
              const btn = document.querySelector('input#searchbtn');
              const btn_bing = document.querySelector('input#btn_bing');
              const btn_guge = document.querySelector('input#btn_guge');
              const btn_blbl = document.querySelector('input#btn_blbl');
+             const btn_zhihu = document.querySelector('input#btn_zhihu');
              const par = document.querySelector('p#searchcontent');
              const sch = document.querySelector('input#name');
 
              btn.addEventListener('click', updatePar);
+             btn_zhihu.addEventListener('click', function(e) {
+                 par.textContent = "知乎搜索：" + sch.value;
+                 window.open("https://www.zhihu.com/search?type=content&q=" + sch.value);
+             });
              btn_bing.addEventListener('click', function(e) {
                  par.textContent = "必应搜索：" + sch.value;
                  window.open("https://www.bing.com/search?q=" + sch.value);
@@ -85,10 +91,10 @@
              function updateButton() {
                  if (button.value === '开动机器') {
                      button.value = '停止机器';
-                     paragraph.textContent = '机器启动了！';
+                     paragraph.textContent = '开！';
                  } else {
                      button.value = '开动机器';
-                     paragraph.textContent = '机器已经停下了。';
+                     paragraph.textContent = '关';
                  }
              }
             </script>
