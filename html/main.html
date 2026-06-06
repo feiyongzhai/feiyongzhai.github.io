@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>简约博客 | 轻量写作与评论</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f9fafb;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            color: #1e293b;
+            line-height: 1.5;
+            padding: 0 1rem 2rem 1rem;
+        }
+
+        /* 简约容器 */
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+        }
+
+        /* ========= 新增导航栏样式 ========= */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e9edf2;
+            padding: 0.7rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            margin-bottom: 1.8rem;
+            border-radius: 0 0 24px 24px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .nav-container {
+            max-width: 880px;
+            margin: 0 auto;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .nav-logo {
+            font-size: 1.3rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .nav-logo:hover {
+            opacity: 0.8;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+        }
+        .nav-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1f3a6b;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-btn-primary {
+            background-color: #1e293b;
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .nav-btn-primary:hover {
+            background-color: #0f172a;
+            transform: translateY(-1px);
+        }
+        .nav-btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+        }
+        .nav-btn-outline:hover {
+            background: #f8fafc;
+        }
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* 原有头部微调 (让头部不那么拥挤) */
+        .site-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.8rem;
+        }
+        .site-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .site-desc {
+            font-size: 0.9rem;
+            color: #5b6e8c;
+            margin-top: 0.3rem;
+        }
+
+        /* 卡片通用样式 */
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 8px 20px -6px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s ease;
+            border: 1px solid #edf2f7;
+        }
+        .card:hover {
+            box-shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 新建博客表单 */
+        .new-post-form {
+            margin-bottom: 2.8rem;
+            scroll-margin-top: 80px;  /* 导航栏固定时，锚点偏移 */
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #334155;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background-color: #ffffff;
+            transition: 0.2s;
+            outline: none;
+        }
+        input:focus, textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .btn {
+            background-color: #f1f5f9;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background-color: #1e293b;
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-primary:hover {
+            background-color: #0f172a;
+            transform: translateY(-1px);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+        }
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+        .btn-danger {
+            color: #dc2626;
+            background: transparent;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        .btn-danger:hover {
+            background-color: #fee2e2;
+        }
+        .btn-sm {
+            padding: 0.25rem 0.7rem;
+            font-size: 0.75rem;
+        }
+
+        /* 博客列表 */
+        .blogs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* 单篇博客卡片 */
+        .blog-card {
+            transition: all 0.1s;
+        }
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.75rem;
+        }
+        .blog-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            word-break: break-word;
+            color: #0f172a;
+        }
+        .blog-meta {
+            font-size: 0.75rem;
+            color: #6c86a3;
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        .blog-content {
+            color: #2d3a4f;
+            font-size: 0.95rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin-bottom: 1.5rem;
+            background: #fefefe;
+            border-left: 3px solid #e2e8f0;
+            padding-left: 1rem;
+        }
+        .delete-blog {
+            background: transparent;
+            border: none;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.1s;
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+        }
+        .delete-blog:hover {
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        /* 评论区 */
+        .comment-section {
+            margin-top: 1.2rem;
+            border-top: 1px solid #ecf3fa;
+            padding-top: 1.2rem;
+        }
+        .comment-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4b6589;
+            margin-bottom: 1rem;
+        }
+        .comment-list {
+            margin-bottom: 1.2rem;
+            max-height: 260px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .comment-item {
+            background: #f8fafd;
+            border-radius: 16px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 0.7rem;
+            font-size: 0.85rem;
+            border: 1px solid #eef3fc;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-bottom: 0.3rem;
+        }
+        .comment-author {
+            font-weight: 600;
+            color: #1f3a6b;
+            font-size: 0.8rem;
+        }
+        .comment-time {
+            font-size: 0.65rem;
+            color: #7e95b0;
+        }
+        .comment-content {
+            color: #2c3f5c;
+            margin-top: 0.25rem;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        .delete-comment {
+            background: none;
+            border: none;
+            font-size: 0.7rem;
+            color: #b9c8e9;
+            cursor: pointer;
+            padding: 0 0.3rem;
+        }
+        .delete-comment:hover {
+            color: #e53e3e;
+        }
+
+        /* 添加评论表单 */
+        .comment-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            align-items: flex-start;
+            margin-top: 0.6rem;
+        }
+        .comment-form input {
+            flex: 2;
+            min-width: 100px;
+            padding: 0.5rem 0.9rem;
+            font-size: 0.85rem;
+            border-radius: 40px;
+        }
+        .comment-form input:first-child {
+            flex: 1;
+        }
+        .comment-form .btn {
+            padding: 0.5rem 1rem;
+            background-color: #eef2ff;
+            font-size: 0.8rem;
+        }
+        .empty-comment {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            padding: 0.8rem 0;
+        }
+        hr {
+            margin: 0.5rem 0;
+            border: none;
+            border-top: 1px solid #ecf3fa;
+        }
+        footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #8ba0bc;
+            border-top: 1px solid #e2edf7;
+            padding-top: 1.5rem;
+        }
+        @media (max-width: 640px) {
+            body {
+                padding: 0 0.8rem 2rem 0.8rem;
+            }
+            .card {
+                padding: 1.2rem;
+            }
+            .blog-title {
+                font-size: 1.25rem;
+            }
+            .comment-form {
+                flex-direction: column;
+            }
+            .comment-form input, .comment-form .btn {
+                width: 100%;
+            }
+            .navbar {
+                padding: 0.6rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========= 新增导航栏 ========= -->
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="#" class="nav-logo" id="homeLink">✍️ 纸间博客</a>
+        <div class="nav-links">
+            <button class="nav-btn nav-btn-primary" id="navNewPostBtn">✨ 写新文章</button>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- 原有站点头部（保留，让设计更丰富） -->
+    <div class="site-header">
+        <h1 class="site-title">记录与回响</h1>
+        <div class="site-desc">简单 · 安静 · 每句话都值得被看见</div>
+    </div>
+
+    <!-- 新建博客卡片 (加上锚点ID便于导航跳转) -->
+    <div class="card new-post-form" id="newPostFormCard">
+        <h3 style="font-size: 1.2rem; margin-bottom: 1rem; font-weight: 500;">📝 撰写新篇章</h3>
+        <div class="form-group">
+            <label>📖 标题</label>
+            <input type="text" id="blogTitle" placeholder="给博客一个标题..." autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label>✍️ 内容</label>
+            <textarea id="blogContent" placeholder="写下你的思考、见闻或灵感……"></textarea>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+            <button class="btn btn-primary" id="publishBtn">✨ 发布博客</button>
+        </div>
+    </div>
+
+    <!-- 博客列表区域 -->
+    <div class="blogs-list" id="blogsContainer">
+        <!-- 动态渲染博客列表 -->
+        <div class="empty-placeholder" style="text-align: center; padding: 3rem; background: #fefefe; border-radius: 32px; color: #9aaec5;">✨ 暂无博客，写下一篇吧～</div>
+    </div>
+    <footer>简约博客 · 所有数据储存在你的浏览器中</footer>
+</div>
+
+<script>
+    // ---------- 存储 KEY ----------
+    const STORAGE_KEY = 'simple_blog_app_data';
+
+    // ---------- 工具函数：转义HTML防XSS ----------
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    // 格式化时间
+    function formatDate(timestamp) {
+        if (!timestamp) return '未知时间';
+        const date = new Date(timestamp);
+        return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+    }
+
+    // 默认演示数据（让页面不空旷，展示功能）
+    function getDefaultBlogs() {
+        return [
+            {
+                id: 'init_blog_1',
+                title: '初遇 · 简约主义',
+                content: '我喜欢干净的文字和呼吸感的设计。在这里，你可以记录生活、写下思考。每一篇博客都支持评论互动，所有内容都保存在本地，放心书写。',
+                timestamp: Date.now() - 86400000 * 2,
+                comments: [
+                    {
+                        id: 'com_1',
+                        author: '林栖',
+                        content: '界面确实很舒服！期待更多灵感。',
+                        timestamp: Date.now() - 86400000
+                    },
+                    {
+                        id: 'com_2',
+                        author: '小野',
+                        content: '这种风格爱了，评论功能也很轻巧。',
+                        timestamp: Date.now() - 72000000
+                    }
+                ]
+            },
+            {
+                id: 'init_blog_2',
+                title: '关于评论：回响的乐趣',
+                content: '每一段文字都值得被回应。在博客下方可以留下你的看法，也能删除自己的评论，让对话保持轻盈。试试新建一篇博客，留下你的印记。',
+                timestamp: Date.now() - 43200000,
+                comments: [
+                    {
+                        id: 'com_3',
+                        author: '叶子',
+                        content: '能删评挺好的，自己管理自己的一亩三分地。',
+                        timestamp: Date.now() - 21600000
+                    }
+                ]
+            }
+        ];
+    }
+
+    // 加载数据
+    function loadData() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            try {
+                const data = JSON.parse(stored);
+                if (data && Array.isArray(data.blogs)) {
+                    return data.blogs;
+                }
+                return getDefaultBlogs();
+            } catch(e) {
+                return getDefaultBlogs();
+            }
+        } else {
+            return getDefaultBlogs();
+        }
+    }
+
+    let blogs = loadData();
+
+    // 保存数据到 localStorage
+    function saveToLocal() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ blogs: blogs }));
+    }
+
+    // 重新渲染整个博客列表 (完全基于 blogs 数组)
+    function renderAllBlogs() {
+        const container = document.getElementById('blogsContainer');
+        if (!container) return;
+        
+        if (!blogs || blogs.length === 0) {
+            container.innerHTML = `<div class="empty-placeholder" style="text-align: center; padding: 3rem; background: #ffffff; border-radius: 32px; color: #9aaec5; border:1px solid #edf2f7;">📭 暂无博客，点击上方「发布博客」写点什么吧～</div>`;
+            return;
+        }
+        
+        // 按时间倒序: 最新博客在上方
+        const sortedBlogs = [...blogs].sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+        
+        let html = '';
+        for (let blog of sortedBlogs) {
+            // 对博客主体转义，但保留换行
+            const safeTitle = escapeHtml(blog.title);
+            const safeContent = escapeHtml(blog.content).replace(/\n/g, '<br>');
+            const blogTime = formatDate(blog.timestamp);
+            
+            // 处理评论列表
+            const commentsArray = blog.comments || [];
+            // 评论按时间正序（旧到新）
+            const sortedComments = [...commentsArray].sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+            let commentsHtml = '';
+            if (sortedComments.length === 0) {
+                commentsHtml = `<div class="empty-comment">💬 还没有评论，来说点什么吧～</div>`;
+            } else {
+                for (let comment of sortedComments) {
+                    const safeAuthor = escapeHtml(comment.author || '匿名');
+                    const safeCommentContent = escapeHtml(comment.content).replace(/\n/g, '<br>');
+                    const commentTime = formatDate(comment.timestamp);
+                    commentsHtml += `
+                        <div class="comment-item" data-comment-id="${comment.id}">
+                            <div class="comment-header">
+                                <span class="comment-author">${safeAuthor}</span>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span class="comment-time">${commentTime}</span>
+                                    <button class="delete-comment btn-sm" data-blog-id="${blog.id}" data-comment-id="${comment.id}" title="删除评论">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="comment-content">${safeCommentContent}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // 整个博客卡片
+            html += `
+                <div class="card blog-card" data-blog-id="${blog.id}">
+                    <div class="blog-header">
+                        <div class="blog-title">${safeTitle}</div>
+                        <button class="delete-blog" data-blog-id="${blog.id}" title="永久删除博客">🗑️ 删除</button>
+                    </div>
+                    <div class="blog-meta">
+                        <span>📅 ${blogTime}</span>
+                        <span>💬 ${commentsArray.length} 条评论</span>
+                    </div>
+                    <div class="blog-content">${safeContent}</div>
+                    
+                    <div class="comment-section">
+                        <div class="comment-title">🗨️ 读者回响</div>
+                        <div class="comment-list" id="comment-list-${blog.id}">
+                            ${commentsHtml}
+                        </div>
+                        <!-- 添加评论表单 -->
+                        <div class="comment-form">
+                            <input type="text" placeholder="称呼 (可选)" class="comment-author-input" value="访客" maxlength="20">
+                            <input type="text" placeholder="写下你的评论..." class="comment-content-input" autocomplete="off">
+                            <button class="btn submit-comment-btn" data-blog-id="${blog.id}">发布评论</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    // ----- 业务逻辑：新建博客 -----
+    function createNewBlog(title, content) {
+        if (!title || title.trim() === '') {
+            alert('请填写博客标题');
+            return false;
+        }
+        if (!content || content.trim() === '') {
+            alert('请填写博客内容');
+            return false;
+        }
+        const newBlog = {
+            id: Date.now() + '-' + Math.random().toString(36).substr(2, 6),
+            title: title.trim(),
+            content: content.trim(),
+            timestamp: Date.now(),
+            comments: []
+        };
+        blogs.unshift(newBlog); // 最新博客添加在最前（渲染时会倒序，不过无所谓，保存后在render排序）
+        saveToLocal();
+        renderAllBlogs();
+        return true;
+    }
+    
+    // 删除博客
+    function deleteBlogById(blogId) {
+        const index = blogs.findIndex(b => b.id == blogId);
+        if (index !== -1) {
+            blogs.splice(index, 1);
+            saveToLocal();
+            renderAllBlogs();
+        } else {
+            console.warn('未找到博客', blogId);
+        }
+    }
+    
+    // 添加评论到指定博客
+    function addCommentToBlog(blogId, author, content) {
+        if (!content || content.trim() === '') {
+            alert('评论内容不能为空');
+            return false;
+        }
+        const blog = blogs.find(b => b.id == blogId);
+        if (!blog) {
+            alert('博客不存在');
+            return false;
+        }
+        const commentAuthor = (author && author.trim() !== '') ? author.trim() : '匿名';
+        const newComment = {
+            id: Date.now() + '-' + Math.random().toString(36).substr(2, 8),
+            author: commentAuthor,
+            content: content.trim(),
+            timestamp: Date.now()
+        };
+        if (!blog.comments) blog.comments = [];
+        blog.comments.push(newComment);
+        saveToLocal();
+        renderAllBlogs();   // 重绘保持同步
+        return true;
+    }
+    
+    // 删除评论
+    function deleteCommentFromBlog(blogId, commentId) {
+        const blog = blogs.find(b => b.id == blogId);
+        if (blog && blog.comments) {
+            const initialLen = blog.comments.length;
+            blog.comments = blog.comments.filter(c => c.id != commentId);
+            if (blog.comments.length !== initialLen) {
+                saveToLocal();
+                renderAllBlogs();
+            } else {
+                alert('评论不存在或已删除');
+            }
+        } else {
+            console.warn('博客或评论不存在');
+        }
+    }
+    
+    // 平滑滚动到新建博客表单 (用于导航栏按钮)
+    function scrollToNewPostForm() {
+        const formElement = document.getElementById('newPostFormCard');
+        if (formElement) {
+            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // 给标题输入框一个轻微高亮
+            const titleInput = document.getElementById('blogTitle');
+            if (titleInput) {
+                titleInput.focus({preventScroll: true});
+            }
+        }
+    }
+    
+    // ----- 全局事件委托 (监听动态按钮)-----
+    function bindGlobalEvents() {
+        // 1. 发布新博客按钮（静态）
+        const publishBtn = document.getElementById('publishBtn');
+        if (publishBtn) {
+            const newBtn = publishBtn.cloneNode(true);
+            publishBtn.parentNode.replaceChild(newBtn, publishBtn);
+            newBtn.addEventListener('click', () => {
+                const titleInput = document.getElementById('blogTitle');
+                const contentInput = document.getElementById('blogContent');
+                const title = titleInput ? titleInput.value : '';
+                const content = contentInput ? contentInput.value : '';
+                if (createNewBlog(title, content)) {
+                    // 清空表单
+                    if (titleInput) titleInput.value = '';
+                    if (contentInput) contentInput.value = '';
+                    // 可选滚动提示
+                }
+            });
+        }
+        
+        // 2. 导航栏 “写新文章” 按钮
+        const navNewBtn = document.getElementById('navNewPostBtn');
+        if (navNewBtn) {
+            // 移除潜在重复监听
+            const newNavBtn = navNewBtn.cloneNode(true);
+            navNewBtn.parentNode.replaceChild(newNavBtn, navNewBtn);
+            newNavBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                scrollToNewPostForm();
+            });
+        }
+        
+        // 3. logo 点击回到顶部（简单体验）
+        const homeLink = document.getElementById('homeLink');
+        if (homeLink) {
+            homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+        
+        // 4. 容器委托监听动态删除博客、评论、提交评论
+        const container = document.getElementById('blogsContainer');
+        if (!container) return;
+        
+        container.addEventListener('click', (e) => {
+            // 删除博客按钮
+            if (e.target.classList.contains('delete-blog')) {
+                const blogId = e.target.getAttribute('data-blog-id');
+                if (blogId && confirm('确定要删除这篇博客吗？评论也会一并消失。')) {
+                    deleteBlogById(blogId);
+                }
+                e.preventDefault();
+                return;
+            }
+            
+            // 提交评论按钮 (.submit-comment-btn)
+            if (e.target.classList.contains('submit-comment-btn')) {
+                const blogId = e.target.getAttribute('data-blog-id');
+                // 查找当前博客卡片里对应的输入框
+                const card = e.target.closest('.blog-card');
+                if (card && blogId) {
+                    const authorInput = card.querySelector('.comment-author-input');
+                    const contentInput = card.querySelector('.comment-content-input');
+                    let author = authorInput ? authorInput.value : '访客';
+                    let content = contentInput ? contentInput.value : '';
+                    if (addCommentToBlog(blogId, author, content)) {
+                        // 清空评论内容输入框（保留称呼不清空，方便连续评论）
+                        if (contentInput) contentInput.value = '';
+                        // 滚动到评论区轻微提醒
+                        const commentSection = card.querySelector('.comment-section');
+                        if(commentSection) commentSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                } else {
+                    // 兜底：获取另一种方式
+                    const btn = e.target;
+                    const bid = btn.getAttribute('data-blog-id');
+                    if(bid){
+                        const wrapper = btn.closest('.comment-form');
+                        if(wrapper){
+                            const authorVal = wrapper.querySelector('.comment-author-input')?.value || '';
+                            const contentVal = wrapper.querySelector('.comment-content-input')?.value || '';
+                            if(addCommentToBlog(bid, authorVal, contentVal)){
+                                if(wrapper.querySelector('.comment-content-input')) wrapper.querySelector('.comment-content-input').value = '';
+                            }
+                        }
+                    }
+                }
+                return;
+            }
+            
+            // 删除评论按钮 (.delete-comment)
+            if (e.target.classList.contains('delete-comment')) {
+                const blogId = e.target.getAttribute('data-blog-id');
+                const commentId = e.target.getAttribute('data-comment-id');
+                if (blogId && commentId) {
+                    if (confirm('删除这条评论？')) {
+                        deleteCommentFromBlog(blogId, commentId);
+                    }
+                } else {
+                    const delBtn = e.target;
+                    const bid = delBtn.getAttribute('data-blog-id');
+                    const cid = delBtn.getAttribute('data-comment-id');
+                    if(bid && cid) deleteCommentFromBlog(bid, cid);
+                }
+                e.preventDefault();
+                return;
+            }
+        });
+    }
+    
+    // 修复localStorage数据格式兼容，确保每个博客都有comments字段
+    function normalizeData() {
+        let needSave = false;
+        for (let blog of blogs) {
+            if (!blog.comments) {
+                blog.comments = [];
+                needSave = true;
+            }
+            if (!blog.id) {
+                blog.id = Date.now() + '-' + Math.random();
+                needSave = true;
+            }
+            if (!blog.timestamp) {
+                blog.timestamp = Date.now();
+                needSave = true;
+            }
+            if (blog.comments && blog.comments.length) {
+                for(let cmt of blog.comments) {
+                    if (!cmt.id) {
+                        cmt.id = Date.now() + '-' + Math.random();
+                        needSave = true;
+                    }
+                    if (!cmt.timestamp) {
+                        cmt.timestamp = Date.now();
+                        needSave = true;
+                    }
+                }
+            }
+        }
+        if (needSave) saveToLocal();
+    }
+    
+    // 初始化整个应用
+    function init() {
+        normalizeData();
+        renderAllBlogs();
+        bindGlobalEvents();
+    }
+    
+    // 启动
+    init();
+</script>
+</body>
+</html>
