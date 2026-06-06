@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>朴素导航 | 数字快捷键 · 无修饰键干扰</title>
+    <title>朴素导航 | 数字快捷键 · 主流AI收藏</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         * {
@@ -273,10 +273,10 @@
         <div class="shortcut-tip">快捷键：Tab 聚焦到列表，按数字键 1-9（无修饰键）使用对应引擎搜索并设为默认</div>
     </div>
 
-    <!-- 收藏夹区块 -->
+    <!-- 收藏夹区块 - 默认显示主流AI网站 -->
     <div class="section" id="favoritesSection">
         <div class="section-header">
-            <span class="section-title">收藏夹</span>
+            <span class="section-title">收藏夹（AI 工具集）</span>
             <div class="header-buttons">
                 <button id="addFavoriteBtn" class="small-btn">+ 新增收藏</button>
                 <button id="resetFavBtn" class="small-btn">重置默认</button>
@@ -289,12 +289,12 @@
 
 <script>
     // ---------- 存储键 ----------
-    const STORAGE_ENGINES = 'nav_engines_v22';
-    const STORAGE_FAVORITES = 'nav_favorites_v22';
-    const STORAGE_HISTORY = 'nav_history_v22';
+    const STORAGE_ENGINES = 'nav_engines_v23';
+    const STORAGE_FAVORITES = 'nav_favorites_v23';
+    const STORAGE_HISTORY = 'nav_history_v23';
     const STORAGE_DEFAULT_ENGINE_ID = 'nav_default_engine_id';
 
-    // 默认引擎列表
+    // 默认搜索引擎列表（保持不变）
     const DEFAULT_ENGINES = [
         { id: "eng_google", name: "Google", urlTemplate: "https://www.google.com/search?q={}" },
         { id: "eng_bing", name: "Bing", urlTemplate: "https://www.bing.com/search?q={}" },
@@ -320,11 +320,16 @@
         { id: "eng_quora", name: "Quora", urlTemplate: "https://www.quora.com/search?q={}" }
     ];
 
+    // 新的默认收藏夹 - 主流 AI 网站
     const DEFAULT_FAVORITES = [
-        { id: "fav_1", name: "GitHub 开源", url: "https://github.com" },
-        { id: "fav_2", name: "Gmail", url: "https://mail.google.com" },
-        { id: "fav_3", name: "YouTube 首页", url: "https://www.youtube.com" },
-        { id: "fav_4", name: "维基百科", url: "https://zh.wikipedia.org" }
+        { id: "fav_ai_1", name: "ChatGPT (OpenAI)", url: "https://chat.openai.com" },
+        { id: "fav_ai_2", name: "Claude (Anthropic)", url: "https://claude.ai" },
+        { id: "fav_ai_3", name: "Gemini (Google)", url: "https://gemini.google.com" },
+        { id: "fav_ai_4", name: "DeepSeek", url: "https://chat.deepseek.com" },
+        { id: "fav_ai_5", name: "Kimi (月之暗面)", url: "https://kimi.moonshot.cn" },
+        { id: "fav_ai_6", name: "通义千问", url: "https://tongyi.aliyun.com" },
+        { id: "fav_ai_7", name: "文心一言", url: "https://yiyan.baidu.com" },
+        { id: "fav_ai_8", name: "智谱清言", url: "https://chatglm.cn" }
     ];
 
     let searchEngines = [];
@@ -594,19 +599,15 @@
         }
     }
 
-    // 快捷键设置：只允许单独数字键（无任何修饰键）触发
     function setupShortcuts() {
         window.addEventListener('keydown', (e) => {
-            // 如果焦点在搜索框内，不干扰输入
             if (document.activeElement === searchInput) return;
             const keyNum = parseInt(e.key);
-            // 仅当按下的是1-9的数字键，并且没有meta/ctrl/alt修饰键时才触发
             if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 9 && !e.metaKey && !e.ctrlKey && !e.altKey) {
                 e.preventDefault();
                 searchWithNumberKey(keyNum);
                 return;
             }
-            // Tab键聚焦到搜索引擎列表
             if (e.key === 'Tab' && !e.metaKey && !e.ctrlKey && !e.altKey) {
                 e.preventDefault();
                 const items = updateEnginesItemsArray();
@@ -617,7 +618,6 @@
         });
     }
 
-    // 渲染引擎，同时显示数字快捷键（基于当前顺序，1-indexed，只显示前9个）
     function renderEngines() {
         if (!enginesGrid) return;
         if (searchEngines.length === 0) {
@@ -642,7 +642,6 @@
         });
         enginesGrid.innerHTML = html;
 
-        // 绑定点击事件
         enginesGrid.querySelectorAll('.grid-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 if (e.target.classList && (e.target.classList.contains('delete-btn'))) return;
@@ -803,7 +802,6 @@
         if (!searchInput) return;
         window.addEventListener('keydown', function(e) {
             if (document.activeElement === searchInput) return;
-            // 单独空格键聚焦，排除修饰键干扰
             if (e.code === 'Space' && !e.metaKey && !e.ctrlKey && !e.altKey) {
                 e.preventDefault();
                 searchInput.focus();
