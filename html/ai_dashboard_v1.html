@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>朴素导航 | 护眼配色 左对齐表格 | 空格键聚焦搜索框</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #eef3e8;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            color: #1e2a2e;
+            padding: 1rem 1.2rem 2rem 1.2rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .section {
+            border: 1px solid #cbd5c0;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            background: #fcfaf5;
+        }
+        .section-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 0.6rem;
+            border-bottom: 1px solid #d6dfcf;
+            padding-bottom: 0.3rem;
+        }
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e2f;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .small-btn {
+            background: #f0f3ea;
+            border: 1px solid #b8c4ae;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-family: inherit;
+            color: #2c3e2f;
+            transition: background 0.1s;
+        }
+        .small-btn:hover {
+            background: #e4ece0;
+        }
+        .small-btn.edit-active {
+            background: #d9e4d2;
+            border-color: #8faa84;
+            font-weight: 500;
+        }
+        .search-area {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.6rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1;
+            padding: 0.4rem 0.6rem;
+            border: 1px solid #b8c4ae;
+            font-size: 0.9rem;
+            background: #fffefa;
+            border-radius: 0;
+            outline: none;
+            color: #1e2a2e;
+        }
+        .search-input:focus {
+            border-color: #7f9a6e;
+        }
+        .search-btn {
+            background: #e9efeb;
+            border: 1px solid #b8c4ae;
+            padding: 0.4rem 0.9rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #2c3e2f;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        .search-btn:hover {
+            background: #dee8da;
+        }
+        .engine-select {
+            background: #fffefa;
+            border: 1px solid #b8c4ae;
+            padding: 0.35rem 1.5rem 0.35rem 0.6rem;
+            font-size: 0.8rem;
+            font-family: inherit;
+            color: #2c3e2f;
+            cursor: pointer;
+            border-radius: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%235a6e4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 12px;
+        }
+        .engine-select:hover {
+            background-color: #f4f7f1;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            margin-top: 0.2rem;
+        }
+        .history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.7rem;
+            align-items: center;
+            border-top: 1px solid #d1ddcc;
+            padding-top: 0.5rem;
+            min-height: 2rem;
+        }
+        .history-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            background: #f4f7f1;
+            border: 1px solid #cbdcc5;
+            padding: 0.1rem 0.3rem 0.1rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        .history-keyword {
+            cursor: pointer;
+            text-decoration: none;
+            color: #2c5a2f;
+        }
+        .history-keyword:hover {
+            text-decoration: underline;
+        }
+        .history-delete {
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #8b6b4d;
+            padding: 0 2px;
+            font-weight: bold;
+        }
+        .history-delete:hover {
+            color: #b34e4e;
+        }
+        .clear-history {
+            background: none;
+            border: 1px solid #b8c4ae;
+            padding: 0.1rem 0.5rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            color: #4f6b3c;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, auto));
+            border: 1px solid #cbd5c0;
+            border-bottom: none;
+            border-right: none;
+            margin-top: 0.3rem;
+        }
+        .grid-item {
+            border-bottom: 1px solid #cbd5c0;
+            border-right: 1px solid #cbd5c0;
+            padding: 0.5rem 0.6rem;
+            background: #fcfaf5;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            cursor: pointer;
+            transition: background 0.1s ease;
+            font-size: 0.85rem;
+            color: #2c5a2f;
+            font-weight: 500;
+            text-align: left;
+        }
+        .grid-item:hover {
+            background: #f0f5ea;
+        }
+        .edit-mode .grid-item {
+            cursor: grab;
+        }
+        .edit-mode .grid-item:active {
+            cursor: grabbing;
+        }
+        .delete-btn {
+            background: #fcfaf5;
+            border: 1px solid #cec1b2;
+            font-size: 0.7rem;
+            cursor: pointer;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #aa7a5c;
+            font-family: monospace;
+            font-weight: bold;
+            margin-left: auto;
+            border-radius: 0;
+        }
+        .delete-btn:hover {
+            background: #f6ece5;
+            color: #c4512a;
+        }
+        .delete-btn {
+            pointer-events: auto;
+        }
+        .info-text {
+            font-size: 0.65rem;
+            color: #7c8f6e;
+            margin-top: 0.3rem;
+        }
+        @media (max-width: 640px) {
+            body { padding: 0.6rem; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(120px, auto)); }
+            .grid-item { padding: 0.4rem 0.5rem; }
+            .delete-btn { width: 20px; height: 20px; font-size: 0.65rem; }
+            .search-area { flex-direction: column; align-items: stretch; }
+            .engine-select, .search-btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="section">
+        <div class="search-area">
+            <input type="text" id="searchInput" class="search-input" placeholder="输入关键词，按空格键快速聚焦" autocomplete="off">
+            <button id="defaultSearchBtn" class="search-btn">搜索</button>
+            <select id="defaultEngineSelect" class="engine-select"></select>
+        </div>
+        <div class="history-header">
+            <span style="font-size:0.8rem; font-weight:500;">最近搜索</span>
+            <button id="clearAllHistoryBtn" class="clear-history">清空历史</button>
+        </div>
+        <div id="historyContainer" class="history-list">
+            <span style="color:#9bb386; font-size:0.7rem;">暂无搜索记录</span>
+        </div>
+    </div>
+
+    <div class="section" id="enginesSection">
+        <div class="section-header">
+            <span class="section-title">搜索引擎</span>
+            <div class="header-buttons">
+                <button id="editModeToggle" class="small-btn">编辑模式 (关闭)</button>
+                <button id="addEngineBtn" class="small-btn">+ 新增引擎</button>
+                <button id="resetEnginesBtn" class="small-btn">重置默认</button>
+            </div>
+        </div>
+        <div id="enginesGrid" class="grid"></div>
+        <div class="info-text">编辑模式下：拖动项目可排序，点击 [x] 删除</div>
+    </div>
+
+    <div class="section" id="favoritesSection">
+        <div class="section-header">
+            <span class="section-title">收藏夹</span>
+            <div class="header-buttons">
+                <button id="addFavoriteBtn" class="small-btn">+ 新增收藏</button>
+                <button id="resetFavBtn" class="small-btn">重置默认</button>
+            </div>
+        </div>
+        <div id="favoritesGrid" class="grid"></div>
+        <div class="info-text">编辑模式下：拖动项目可排序，点击 [x] 删除</div>
+    </div>
+</div>
+
+<script>
+    // ---------- 存储键 ----------
+    const STORAGE_ENGINES = 'nav_engines_v16';
+    const STORAGE_FAVORITES = 'nav_favorites_v16';
+    const STORAGE_HISTORY = 'nav_history_v16';
+    const STORAGE_DEFAULT_ENGINE_ID = 'nav_default_engine_id';
+
+    // ---------- 默认搜索引擎 ----------
+    const DEFAULT_ENGINES = [
+        { id: "eng_google", name: "Google", urlTemplate: "https://www.google.com/search?q={}" },
+        { id: "eng_bing", name: "Bing", urlTemplate: "https://www.bing.com/search?q={}" },
+        { id: "eng_baidu", name: "百度", urlTemplate: "https://www.baidu.com/s?wd={}" },
+        { id: "eng_yahoo", name: "Yahoo", urlTemplate: "https://search.yahoo.com/search?p={}" },
+        { id: "eng_yandex", name: "Yandex", urlTemplate: "https://yandex.com/search/?text={}" },
+        { id: "eng_duckduckgo", name: "DuckDuckGo", urlTemplate: "https://duckduckgo.com/?q={}" },
+        { id: "eng_weibo", name: "微博搜索", urlTemplate: "https://s.weibo.com/weibo?q={}" },
+        { id: "eng_zhihu", name: "知乎", urlTemplate: "https://www.zhihu.com/search?type=content&q={}" },
+        { id: "eng_bilibili", name: "哔哩哔哩", urlTemplate: "https://search.bilibili.com/all?keyword={}" },
+        { id: "eng_douyin", name: "抖音", urlTemplate: "https://www.douyin.com/search/{}" },
+        { id: "eng_xiaohongshu", name: "小红书", urlTemplate: "https://www.xiaohongshu.com/search_result?keyword={}" },
+        { id: "eng_twitter", name: "Twitter", urlTemplate: "https://twitter.com/search?q={}" },
+        { id: "eng_instagram", name: "Instagram", urlTemplate: "https://www.instagram.com/explore/tags/?q={}" },
+        { id: "eng_youtube", name: "YouTube", urlTemplate: "https://www.youtube.com/results?search_query={}" },
+        { id: "eng_github", name: "GitHub", urlTemplate: "https://github.com/search?q={}" },
+        { id: "eng_stackoverflow", name: "Stack Overflow", urlTemplate: "https://stackoverflow.com/search?q={}" },
+        { id: "eng_tieba", name: "百度贴吧", urlTemplate: "https://tieba.baidu.com/f?kw={}" },
+        { id: "eng_wikipedia", name: "维基百科", urlTemplate: "https://zh.wikipedia.org/w/index.php?search={}" },
+        { id: "eng_360", name: "360搜索", urlTemplate: "https://www.so.com/s?q={}" },
+        { id: "eng_sogou", name: "搜狗搜索", urlTemplate: "https://www.sogou.com/web?query={}" },
+        { id: "eng_reddit", name: "Reddit", urlTemplate: "https://www.reddit.com/search/?q={}" },
+        { id: "eng_quora", name: "Quora", urlTemplate: "https://www.quora.com/search?q={}" }
+    ];
+
+    const DEFAULT_FAVORITES = [
+        { id: "fav_1", name: "GitHub 开源", url: "https://github.com" },
+        { id: "fav_2", name: "Gmail", url: "https://mail.google.com" },
+        { id: "fav_3", name: "YouTube 首页", url: "https://www.youtube.com" },
+        { id: "fav_4", name: "维基百科", url: "https://zh.wikipedia.org" }
+    ];
+
+    let searchEngines = [];
+    let favorites = [];
+    let searchHistory = [];
+    let editMode = false;
+    let defaultEngineId = null;
+
+    let engineSortable = null;
+    let favSortable = null;
+
+    const enginesGrid = document.getElementById('enginesGrid');
+    const favoritesGrid = document.getElementById('favoritesGrid');
+    const historyContainer = document.getElementById('historyContainer');
+    const searchInput = document.getElementById('searchInput');
+    const defaultSearchBtn = document.getElementById('defaultSearchBtn');
+    const defaultEngineSelect = document.getElementById('defaultEngineSelect');
+    const editModeToggle = document.getElementById('editModeToggle');
+    const addEngineBtn = document.getElementById('addEngineBtn');
+    const addFavoriteBtn = document.getElementById('addFavoriteBtn');
+    const resetEnginesBtn = document.getElementById('resetEnginesBtn');
+    const resetFavBtn = document.getElementById('resetFavBtn');
+    const clearAllHistoryBtn = document.getElementById('clearAllHistoryBtn');
+
+    function generateId(prefix) {
+        return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+    }
+    function saveEngines() { localStorage.setItem(STORAGE_ENGINES, JSON.stringify(searchEngines)); }
+    function saveFavorites() { localStorage.setItem(STORAGE_FAVORITES, JSON.stringify(favorites)); }
+    function saveHistory() {
+        if (searchHistory.length > 40) searchHistory = searchHistory.slice(0, 40);
+        localStorage.setItem(STORAGE_HISTORY, JSON.stringify(searchHistory));
+    }
+    function saveDefaultEngineId() {
+        if (defaultEngineId) localStorage.setItem(STORAGE_DEFAULT_ENGINE_ID, defaultEngineId);
+    }
+    function loadData() {
+        const storedEngines = localStorage.getItem(STORAGE_ENGINES);
+        if (storedEngines) {
+            try { searchEngines = JSON.parse(storedEngines); } catch(e) { searchEngines = []; }
+        }
+        if (!searchEngines || searchEngines.length === 0) {
+            searchEngines = JSON.parse(JSON.stringify(DEFAULT_ENGINES));
+            saveEngines();
+        }
+        const storedFav = localStorage.getItem(STORAGE_FAVORITES);
+        if (storedFav) {
+            try { favorites = JSON.parse(storedFav); } catch(e) { favorites = []; }
+        }
+        if (!favorites || favorites.length === 0) {
+            favorites = JSON.parse(JSON.stringify(DEFAULT_FAVORITES));
+            saveFavorites();
+        }
+        const storedHistory = localStorage.getItem(STORAGE_HISTORY);
+        if (storedHistory) {
+            try { searchHistory = JSON.parse(storedHistory); } catch(e) { searchHistory = []; }
+        }
+        if (!searchHistory) searchHistory = [];
+
+        const storedDefaultId = localStorage.getItem(STORAGE_DEFAULT_ENGINE_ID);
+        if (storedDefaultId && searchEngines.some(e => e.id === storedDefaultId)) {
+            defaultEngineId = storedDefaultId;
+        } else {
+            const google = searchEngines.find(e => e.name === "Google");
+            defaultEngineId = google ? google.id : (searchEngines[0]?.id || null);
+            if (defaultEngineId) saveDefaultEngineId();
+        }
+    }
+
+    function updateDefaultEngineSelect() {
+        if (!defaultEngineSelect) return;
+        const currentSelectedId = defaultEngineSelect.value;
+        defaultEngineSelect.innerHTML = '';
+        searchEngines.forEach(engine => {
+            const option = document.createElement('option');
+            option.value = engine.id;
+            option.textContent = engine.name;
+            defaultEngineSelect.appendChild(option);
+        });
+        if (currentSelectedId && searchEngines.some(e => e.id === currentSelectedId)) {
+            defaultEngineSelect.value = currentSelectedId;
+        } else if (defaultEngineId && searchEngines.some(e => e.id === defaultEngineId)) {
+            defaultEngineSelect.value = defaultEngineId;
+        } else if (searchEngines.length > 0) {
+            defaultEngineSelect.value = searchEngines[0].id;
+        }
+        if (defaultEngineSelect.value) {
+            defaultEngineId = defaultEngineSelect.value;
+            saveDefaultEngineId();
+        }
+    }
+
+    function addHistoryKeyword(keyword) {
+        if (!keyword || keyword.trim() === '') return;
+        keyword = keyword.trim();
+        const idx = searchHistory.indexOf(keyword);
+        if (idx !== -1) searchHistory.splice(idx, 1);
+        searchHistory.unshift(keyword);
+        if (searchHistory.length > 25) searchHistory.pop();
+        saveHistory();
+        renderHistory();
+    }
+    function removeHistoryItem(keyword) {
+        const idx = searchHistory.indexOf(keyword);
+        if (idx !== -1) {
+            searchHistory.splice(idx, 1);
+            saveHistory();
+            renderHistory();
+        }
+    }
+    function clearAllHistory() {
+        searchHistory = [];
+        saveHistory();
+        renderHistory();
+    }
+
+    function performSearch(engine, keyword) {
+        if (!keyword || keyword.trim() === '') {
+            alert("请输入关键词");
+            return false;
+        }
+        keyword = keyword.trim();
+        let url = engine.urlTemplate.replace('{}', encodeURIComponent(keyword));
+        window.open(url, '_blank');
+        addHistoryKeyword(keyword);
+        return true;
+    }
+    function defaultSearch() {
+        const keyword = searchInput.value.trim();
+        if (!keyword) { alert("请输入关键词"); return; }
+        let engine = searchEngines.find(e => e.id === defaultEngineId);
+        if (!engine && searchEngines.length > 0) engine = searchEngines[0];
+        if (engine) performSearch(engine, keyword);
+        else alert("没有可用的搜索引擎");
+    }
+
+    function deleteEngineById(engineId) {
+        if (confirm("确定删除此搜索引擎吗？")) {
+            searchEngines = searchEngines.filter(e => e.id !== engineId);
+            saveEngines();
+            if (defaultEngineId === engineId) {
+                defaultEngineId = searchEngines[0]?.id || null;
+                saveDefaultEngineId();
+            }
+            renderEngines();
+            updateDefaultEngineSelect();
+            refreshSortable();
+        }
+    }
+    function deleteFavoriteById(favId) {
+        if (confirm("确定删除此收藏链接吗？")) {
+            favorites = favorites.filter(f => f.id !== favId);
+            saveFavorites();
+            renderFavorites();
+            refreshSortable();
+        }
+    }
+
+    function syncEnginesOrderFromDOM() {
+        if (!enginesGrid) return;
+        const items = enginesGrid.querySelectorAll('.grid-item');
+        const newOrder = [];
+        for (let item of items) {
+            const id = item.getAttribute('data-id');
+            if (id) {
+                const found = searchEngines.find(e => e.id === id);
+                if (found) newOrder.push(found);
+            }
+        }
+        if (newOrder.length === searchEngines.length) {
+            searchEngines = newOrder;
+            saveEngines();
+            updateDefaultEngineSelect();
+        } else {
+            renderEngines();
+        }
+    }
+    function syncFavoritesOrderFromDOM() {
+        if (!favoritesGrid) return;
+        const items = favoritesGrid.querySelectorAll('.grid-item');
+        const newOrder = [];
+        for (let item of items) {
+            const id = item.getAttribute('data-id');
+            if (id) {
+                const found = favorites.find(f => f.id === id);
+                if (found) newOrder.push(found);
+            }
+        }
+        if (newOrder.length === favorites.length) {
+            favorites = newOrder;
+            saveFavorites();
+        } else {
+            renderFavorites();
+        }
+    }
+
+    function initSortable() {
+        if (!editMode) return;
+        if (engineSortable) engineSortable.destroy();
+        if (favSortable) favSortable.destroy();
+        engineSortable = new Sortable(enginesGrid, {
+            animation: 150,
+            handle: '.grid-item',
+            draggable: '.grid-item',
+            onEnd: () => syncEnginesOrderFromDOM()
+        });
+        favSortable = new Sortable(favoritesGrid, {
+            animation: 150,
+            handle: '.grid-item',
+            draggable: '.grid-item',
+            onEnd: () => syncFavoritesOrderFromDOM()
+        });
+    }
+    function destroySortable() {
+        if (engineSortable) { engineSortable.destroy(); engineSortable = null; }
+        if (favSortable) { favSortable.destroy(); favSortable = null; }
+    }
+    function refreshSortable() {
+        if (editMode) initSortable();
+    }
+
+    function renderEngines() {
+        if (!enginesGrid) return;
+        if (searchEngines.length === 0) {
+            enginesGrid.innerHTML = `<div class="grid-item" style="grid-column:1/-1; cursor:default;">暂无搜索引擎，请点击“重置默认”或手动新增</div>`;
+            return;
+        }
+        let html = '';
+        searchEngines.forEach((engine) => {
+            html += `<div class="grid-item" data-id="${engine.id}" data-type="engine">
+                        <span>${escapeHtml(engine.name)}</span>`;
+            if (editMode) {
+                html += `<button class="delete-btn" data-delete-engine="${engine.id}" title="删除">x</button>`;
+            }
+            html += `</div>`;
+        });
+        enginesGrid.innerHTML = html;
+
+        if (editMode) {
+            document.querySelectorAll('[data-delete-engine]').forEach(delBtn => {
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const engineId = delBtn.getAttribute('data-delete-engine');
+                    deleteEngineById(engineId);
+                });
+            });
+        }
+    }
+
+    function renderFavorites() {
+        if (!favoritesGrid) return;
+        if (favorites.length === 0) {
+            favoritesGrid.innerHTML = `<div class="grid-item" style="grid-column:1/-1; cursor:default;">暂无收藏，点击“新增收藏”添加</div>`;
+            return;
+        }
+        let html = '';
+        favorites.forEach((fav) => {
+            html += `<div class="grid-item" data-id="${fav.id}" data-type="favorite" data-url="${escapeAttr(fav.url)}">
+                        <span>${escapeHtml(fav.name)}</span>`;
+            if (editMode) {
+                html += `<button class="delete-btn" data-delete-fav="${fav.id}" title="删除">x</button>`;
+            }
+            html += `</div>`;
+        });
+        favoritesGrid.innerHTML = html;
+
+        if (editMode) {
+            document.querySelectorAll('[data-delete-fav]').forEach(delBtn => {
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const favId = delBtn.getAttribute('data-delete-fav');
+                    deleteFavoriteById(favId);
+                });
+            });
+        }
+    }
+
+    function bindGridClickEvents() {
+        if (enginesGrid) {
+            enginesGrid.addEventListener('click', (e) => {
+                let targetItem = e.target.closest('.grid-item');
+                if (!targetItem) return;
+                if (e.target.classList && e.target.classList.contains('delete-btn')) return;
+                const type = targetItem.getAttribute('data-type');
+                if (type === 'engine') {
+                    const engineId = targetItem.getAttribute('data-id');
+                    const engine = searchEngines.find(eng => eng.id === engineId);
+                    if (engine) {
+                        const keyword = searchInput.value.trim();
+                        if (!keyword) { alert("请在搜索框输入关键词"); return; }
+                        performSearch(engine, keyword);
+                    }
+                }
+            });
+        }
+        if (favoritesGrid) {
+            favoritesGrid.addEventListener('click', (e) => {
+                let targetItem = e.target.closest('.grid-item');
+                if (!targetItem) return;
+                if (e.target.classList && e.target.classList.contains('delete-btn')) return;
+                const type = targetItem.getAttribute('data-type');
+                if (type === 'favorite') {
+                    const url = targetItem.getAttribute('data-url');
+                    if (url) window.open(url, '_blank');
+                }
+            });
+        }
+    }
+
+    function renderHistory() {
+        if (!historyContainer) return;
+        if (searchHistory.length === 0) {
+            historyContainer.innerHTML = '<span style="color:#9bb386; font-size:0.7rem;">暂无搜索记录</span>';
+            return;
+        }
+        let html = '';
+        searchHistory.forEach(keyword => {
+            html += `<div class="history-item">
+                        <span class="history-keyword" data-keyword="${escapeAttr(keyword)}">${escapeHtml(keyword)}</span>
+                        <button class="history-delete" data-delkeyword="${escapeAttr(keyword)}">x</button>
+                    </div>`;
+        });
+        historyContainer.innerHTML = html;
+
+        document.querySelectorAll('.history-keyword').forEach(el => {
+            el.addEventListener('click', () => {
+                const kw = el.getAttribute('data-keyword');
+                if (kw) searchInput.value = kw;
+            });
+        });
+        document.querySelectorAll('.history-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const kw = btn.getAttribute('data-delkeyword');
+                if (kw) removeHistoryItem(kw);
+            });
+        });
+    }
+
+    function addNewEngine() {
+        let name = prompt("请输入搜索引擎名称", "");
+        if (!name) return;
+        let urlTemplate = prompt("请输入搜索URL模板，使用 {} 代表关键词\n示例: https://www.so.com/s?q={}", "");
+        if (!urlTemplate) return;
+        if (!urlTemplate.includes('{}')) {
+            if (confirm("URL模板中没有{}占位符，将自动在末尾添加?q={}，是否继续？")) {
+                if (!urlTemplate.includes('?')) urlTemplate = urlTemplate + '?q={}';
+                else urlTemplate = urlTemplate + '&q={}';
+            } else return;
+        }
+        searchEngines.push({ id: generateId('eng'), name: name.trim(), urlTemplate: urlTemplate.trim() });
+        saveEngines();
+        renderEngines();
+        updateDefaultEngineSelect();
+        refreshSortable();
+    }
+    function addNewFavorite() {
+        let name = prompt("请输入收藏名称", "");
+        if (!name) return;
+        let url = prompt("请输入网址 (URL)", "https://");
+        if (!url) return;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) url = 'https://' + url;
+        favorites.push({ id: generateId('fav'), name: name.trim(), url: url.trim() });
+        saveFavorites();
+        renderFavorites();
+        refreshSortable();
+    }
+    function resetDefaultEngines() {
+        if (confirm("重置默认搜索引擎将丢失所有自定义引擎，确定吗？")) {
+            searchEngines = JSON.parse(JSON.stringify(DEFAULT_ENGINES));
+            saveEngines();
+            const google = searchEngines.find(e => e.name === "Google");
+            defaultEngineId = google ? google.id : searchEngines[0].id;
+            saveDefaultEngineId();
+            renderEngines();
+            updateDefaultEngineSelect();
+            refreshSortable();
+        }
+    }
+    function resetDefaultFavorites() {
+        if (confirm("重置默认收藏夹将丢失所有自定义收藏链接，确定吗？")) {
+            favorites = JSON.parse(JSON.stringify(DEFAULT_FAVORITES));
+            saveFavorites();
+            renderFavorites();
+            refreshSortable();
+        }
+    }
+
+    function toggleEditMode() {
+        editMode = !editMode;
+        editModeToggle.innerText = editMode ? "编辑模式 (开启)" : "编辑模式 (关闭)";
+        if (editMode) {
+            editModeToggle.classList.add('edit-active');
+            document.getElementById('enginesSection').classList.add('edit-mode');
+            document.getElementById('favoritesSection').classList.add('edit-mode');
+            initSortable();
+            renderEngines();
+            renderFavorites();
+        } else {
+            editModeToggle.classList.remove('edit-active');
+            document.getElementById('enginesSection').classList.remove('edit-mode');
+            document.getElementById('favoritesSection').classList.remove('edit-mode');
+            destroySortable();
+            renderEngines();
+            renderFavorites();
+        }
+    }
+
+    // 空格键聚焦搜索框，不影响输入法，不插入字符
+    function setupSpaceFocus() {
+        if (!searchInput) return;
+        window.addEventListener('keydown', function(e) {
+            // 如果焦点已经在搜索框内，不处理
+            if (document.activeElement === searchInput) return;
+            // 仅当按下空格键（且没有修饰键）时聚焦
+            if (e.code === 'Space' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                e.preventDefault();  // 阻止页面滚动
+                searchInput.focus();
+            }
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    function escapeAttr(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function bindEvents() {
+        defaultSearchBtn.addEventListener('click', defaultSearch);
+        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') defaultSearch(); });
+        editModeToggle.addEventListener('click', toggleEditMode);
+        addEngineBtn.addEventListener('click', addNewEngine);
+        addFavoriteBtn.addEventListener('click', addNewFavorite);
+        resetEnginesBtn.addEventListener('click', resetDefaultEngines);
+        resetFavBtn.addEventListener('click', resetDefaultFavorites);
+        clearAllHistoryBtn.addEventListener('click', () => { if (confirm("清空所有搜索历史？")) clearAllHistory(); });
+        defaultEngineSelect.addEventListener('change', () => {
+            defaultEngineId = defaultEngineSelect.value;
+            saveDefaultEngineId();
+        });
+        bindGridClickEvents();
+        setupSpaceFocus();  // 空格键聚焦
+    }
+
+    function init() {
+        loadData();
+        renderEngines();
+        renderFavorites();
+        renderHistory();
+        updateDefaultEngineSelect();
+        bindEvents();
+        editMode = false;
+        editModeToggle.innerText = "编辑模式 (关闭)";
+        editModeToggle.classList.remove('edit-active');
+        destroySortable();
+        const enginesSec = document.getElementById('enginesSection');
+        const favSec = document.getElementById('favoritesSection');
+        if (enginesSec) enginesSec.classList.remove('edit-mode');
+        if (favSec) favSec.classList.remove('edit-mode');
+        renderEngines();
+        renderFavorites();
+    }
+    init();
+</script>
+</body>
+</html>
