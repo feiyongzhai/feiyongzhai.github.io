@@ -264,8 +264,8 @@
             <span class="section-title">搜索引擎（点击直接搜索，数字键 1-9 快捷调用）</span>
             <div class="header-buttons">
                 <button id="editModeToggle" class="small-btn">编辑模式 (关闭)</button>
-                <button id="addEngineBtn" class="small-btn">+ 新增引擎</button>
-                <button id="resetEnginesBtn" class="small-btn">重置默认</button>
+                <button id="addEngineBtn" class="small-btn">新增</button>
+                <button id="resetEnginesBtn" class="small-btn">重置</button>
             </div>
         </div>
         <div id="enginesGrid" class="grid"></div>
@@ -273,13 +273,13 @@
         <div class="shortcut-tip">快捷键：Tab 聚焦到列表，按数字键 1-9（无修饰键）使用对应引擎搜索并设为默认</div>
     </div>
 
-    <!-- 收藏夹区块 - 默认显示主流AI网站 -->
+    <!-- 收藏夹区块 - 默认显示主流AI网站，同样支持编辑模式拖动排序 -->
     <div class="section" id="favoritesSection">
         <div class="section-header">
             <span class="section-title">收藏夹（AI 工具集）</span>
             <div class="header-buttons">
-                <button id="addFavoriteBtn" class="small-btn">+ 新增收藏</button>
-                <button id="resetFavBtn" class="small-btn">重置默认</button>
+                <button id="addFavoriteBtn" class="small-btn">新增</button>
+                <button id="resetFavBtn" class="small-btn">重置</button>
             </div>
         </div>
         <div id="favoritesGrid" class="grid"></div>
@@ -289,12 +289,12 @@
 
 <script>
     // ---------- 存储键 ----------
-    const STORAGE_ENGINES = 'nav_engines_v23';
-    const STORAGE_FAVORITES = 'nav_favorites_v23';
-    const STORAGE_HISTORY = 'nav_history_v23';
+    const STORAGE_ENGINES = 'nav_engines_v24';
+    const STORAGE_FAVORITES = 'nav_favorites_v24';
+    const STORAGE_HISTORY = 'nav_history_v24';
     const STORAGE_DEFAULT_ENGINE_ID = 'nav_default_engine_id';
 
-    // 默认搜索引擎列表（保持不变）
+    // 默认搜索引擎列表
     const DEFAULT_ENGINES = [
         { id: "eng_google", name: "Google", urlTemplate: "https://www.google.com/search?q={}" },
         { id: "eng_bing", name: "Bing", urlTemplate: "https://www.bing.com/search?q={}" },
@@ -320,7 +320,7 @@
         { id: "eng_quora", name: "Quora", urlTemplate: "https://www.quora.com/search?q={}" }
     ];
 
-    // 新的默认收藏夹 - 主流 AI 网站
+    // 默认收藏夹 - 主流 AI 网站
     const DEFAULT_FAVORITES = [
         { id: "fav_ai_1", name: "ChatGPT (OpenAI)", url: "https://chat.openai.com" },
         { id: "fav_ai_2", name: "Claude (Anthropic)", url: "https://claude.ai" },
@@ -621,7 +621,7 @@
     function renderEngines() {
         if (!enginesGrid) return;
         if (searchEngines.length === 0) {
-            enginesGrid.innerHTML = `<div class="grid-item" style="grid-column:1/-1; cursor:default;">暂无搜索引擎，请点击“重置默认”或手动新增</div>`;
+            enginesGrid.innerHTML = `<div class="grid-item" style="grid-column:1/-1; cursor:default;">暂无搜索引擎，请点击“重置”或手动新增</div>`;
             clearKeyboardFocus();
             return;
         }
@@ -665,7 +665,7 @@
     function renderFavorites() {
         if (!favoritesGrid) return;
         if (favorites.length === 0) {
-            favoritesGrid.innerHTML = `<div class="grid-item" style="grid-column:1/-1; cursor:default;">暂无收藏，点击“新增收藏”添加</div>`;
+            favoritesGrid.innerHTML = `<div class="grid-item" style="grid-column:1/-1; cursor:default;">暂无收藏，点击“新增”添加</div>`;
             return;
         }
         let html = '';
