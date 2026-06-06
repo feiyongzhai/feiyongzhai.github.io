@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>朴素导航 | 数字快捷键 · 一目了然</title>
+    <title>朴素导航 | 数字快捷键 · 无修饰键干扰</title>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         * {
@@ -270,7 +270,7 @@
         </div>
         <div id="enginesGrid" class="grid"></div>
         <div class="info-text">编辑模式下：拖动项目可排序，点击 [x] 删除</div>
-        <div class="shortcut-tip">快捷键：Tab 聚焦到列表，按数字 1-9 使用对应引擎搜索（同时设为默认）</div>
+        <div class="shortcut-tip">快捷键：Tab 聚焦到列表，按数字键 1-9（无修饰键）使用对应引擎搜索并设为默认</div>
     </div>
 
     <!-- 收藏夹区块 -->
@@ -289,9 +289,9 @@
 
 <script>
     // ---------- 存储键 ----------
-    const STORAGE_ENGINES = 'nav_engines_v21';
-    const STORAGE_FAVORITES = 'nav_favorites_v21';
-    const STORAGE_HISTORY = 'nav_history_v21';
+    const STORAGE_ENGINES = 'nav_engines_v22';
+    const STORAGE_FAVORITES = 'nav_favorites_v22';
+    const STORAGE_HISTORY = 'nav_history_v22';
     const STORAGE_DEFAULT_ENGINE_ID = 'nav_default_engine_id';
 
     // 默认引擎列表
@@ -594,16 +594,20 @@
         }
     }
 
+    // 快捷键设置：只允许单独数字键（无任何修饰键）触发
     function setupShortcuts() {
         window.addEventListener('keydown', (e) => {
+            // 如果焦点在搜索框内，不干扰输入
             if (document.activeElement === searchInput) return;
             const keyNum = parseInt(e.key);
-            if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 9) {
+            // 仅当按下的是1-9的数字键，并且没有meta/ctrl/alt修饰键时才触发
+            if (!isNaN(keyNum) && keyNum >= 1 && keyNum <= 9 && !e.metaKey && !e.ctrlKey && !e.altKey) {
                 e.preventDefault();
                 searchWithNumberKey(keyNum);
                 return;
             }
-            if (e.key === 'Tab') {
+            // Tab键聚焦到搜索引擎列表
+            if (e.key === 'Tab' && !e.metaKey && !e.ctrlKey && !e.altKey) {
                 e.preventDefault();
                 const items = updateEnginesItemsArray();
                 if (items.length === 0) return;
@@ -641,10 +645,7 @@
         // 绑定点击事件
         enginesGrid.querySelectorAll('.grid-item').forEach(item => {
             item.addEventListener('click', (e) => {
-                if (e.target.classList && (e.target.classList.contains('delete-btn') || e.target.classList.contains('shortcut-badge'))) {
-                    // 点击快捷键数字区域也视为整体点击引擎（符合预期），不阻止，继续触发
-                    if (e.target.classList.contains('delete-btn')) return;
-                }
+                if (e.target.classList && (e.target.classList.contains('delete-btn'))) return;
                 const engineId = item.getAttribute('data-id');
                 if (engineId) onEngineClick(engineId);
             });
@@ -802,7 +803,8 @@
         if (!searchInput) return;
         window.addEventListener('keydown', function(e) {
             if (document.activeElement === searchInput) return;
-            if (e.code === 'Space' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+            // 单独空格键聚焦，排除修饰键干扰
+            if (e.code === 'Space' && !e.metaKey && !e.ctrlKey && !e.altKey) {
                 e.preventDefault();
                 searchInput.focus();
             }
