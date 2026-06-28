@@ -171,8 +171,8 @@
     <script>
         (function() {
             const HTML_DIR = './html/';
-            const CACHE_KEY = 'html_index_cache_v4';
-            const MAX_DEPTH = 10; // 增加深度以覆盖深层目录
+            const CACHE_KEY = 'html_index_cache_v5';
+            const MAX_DEPTH = 10;
 
             const $ = (s) => document.querySelector(s);
             const filesContainer = $('#filesContainer');
@@ -218,23 +218,35 @@
                 setTimeout(() => t.remove(), 3000);
             }
 
+            // 美化文件名：移除扩展名并解码可能的URI编码
             function beautifyName(filename) {
-                let name = filename.replace(/\.html?$/i, '');
-                name = name.replace(/[-_]/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
-                return name.replace(/\b\w/g, c => c.toUpperCase()).trim() || filename;
+                // 先尝试解码，将 %E4 等恢复为中文
+                let decoded = filename;
+                try {
+                    decoded = decodeURIComponent(filename);
+                } catch (e) {
+                    // 解码失败则保持原样
+                }
+                // 去掉 .html / .htm 扩展名
+                let name = decoded.replace(/\.html?$/i, '');
+                // 将连字符和下划线替换为空格
+                name = name.replace(/[-_]/g, ' ');
+                // 驼峰分词
+                name = name.replace(/([a-z])([A-Z])/g, '$1 $2');
+                // 首字母大写
+                name = name.replace(/\b\w/g, c => c.toUpperCase());
+                return name.trim() || decoded;
             }
 
-            // 从HTML文本中提取<title>
+            // 提取<title>
             function extractTitle(html) {
                 const m = html.match(/<title[^>]*>([^<]*)<\/title>/i);
                 return m ? m[1].trim().replace(/\s+/g, ' ') : null;
             }
 
-            // ---------- 路径与URL处理 ----------
-            // 规范化路径：移除多余的斜杠，确保以./html/开头
+            // 路径与URL处理
             function normalizePath(p) {
                 if (!p) return '';
-                // 处理相对路径中的.和..
                 const parts = p.split('/');
                 const stack = [];
                 for (const part of parts) {
@@ -244,36 +256,27 @@
                 return './' + stack.join('/');
             }
 
-            // 使用URL对象解析相对路径（相对于当前页面baseUrl）
             function resolveUrl(href, baseUrl) {
                 try {
-                    // 构造一个虚拟的绝对URL来解析
                     const dummyOrigin = 'https://example.com';
                     const absoluteBase = baseUrl.startsWith('./') ? (dummyOrigin + baseUrl.substring(1)) : (dummyOrigin + '/' + baseUrl);
                     const url = new URL(href, absoluteBase);
-                    // 提取路径部分，并转回相对路径形式
                     let path = url.pathname;
-                    // 移除虚拟origin前缀（如果存在），保留相对形式
                     if (path.startsWith('/')) path = '.' + path;
                     return normalizePath(path);
                 } catch (e) {
-                    // 回退：简单拼接
                     return normalizePath(baseUrl + href);
                 }
             }
 
-            // 判断URL是否为目录（结尾为/或者没有扩展名且不是以.html/.htm结尾）
             function isDirectoryPath(url) {
-                // 移除查询参数和锚点
                 const clean = url.split('?')[0].split('#')[0];
                 if (clean.endsWith('/')) return true;
-                // 没有扩展名（且不是以.html或.htm结尾）
                 const lastSegment = clean.split('/').pop();
                 if (!lastSegment.includes('.')) return true;
                 return false;
             }
 
-            // 从HTML页面中提取所有本地链接（文件和目录）
             function extractAllLinks(html, baseUrl) {
                 const doc = new DOMParser().parseFromString(html, 'text/html');
                 const links = doc.querySelectorAll('a[href]');
@@ -283,13 +286,11 @@
                 for (const a of links) {
                     let href = a.getAttribute('href').trim();
                     if (!href) continue;
-                    // 跳过外部链接、锚点、javascript
                     if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//') ||
                         href.startsWith('#') || href.startsWith('javascript:')) continue;
-                    
-                    // 解析相对路径
+
                     const resolved = resolveUrl(href, baseUrl);
-                    if (!resolved || !resolved.startsWith('./html/')) continue; // 限制在html目录下
+                    if (!resolved || !resolved.startsWith('./html/')) continue;
 
                     const cleanPath = resolved.split('?')[0].split('#')[0];
                     if (seen.has(cleanPath)) continue;
@@ -302,7 +303,6 @@
                             title: null
                         });
                     } else if (isDirectoryPath(cleanPath)) {
-                        // 确保目录路径以/结尾
                         let dirPath = cleanPath.endsWith('/') ? cleanPath : cleanPath + '/';
                         discovered.directories.add(dirPath);
                     }
@@ -310,27 +310,24 @@
                 return discovered;
             }
 
-            // ---------- HTTP 扫描核心 ----------
+            // HTTP扫描
             async function scanViaHTTP() {
-                const discoveredFiles = []; // { path, dirPath, title }
-                const visitedDirs = new Set(); // 已访问的目录URL
-                const queue = []; // 待访问的目录URL（以/结尾）
+                const discoveredFiles = [];
+                const visitedDirs = new Set();
+                const queue = [];
 
-                // 添加初始目录
                 const startDir = normalizePath(HTML_DIR);
-                if (!startDir.endsWith('/')) queue.push(startDir + '/');
-                else queue.push(startDir);
+                queue.push(startDir.endsWith('/') ? startDir : startDir + '/');
 
                 while (queue.length > 0) {
                     const dirUrl = queue.shift();
                     if (visitedDirs.has(dirUrl)) continue;
-                    if (visitedDirs.size > 200) break; // 安全限制，防止无限循环
+                    if (visitedDirs.size > 200) break;
                     visitedDirs.add(dirUrl);
 
                     try {
                         const resp = await fetch(dirUrl, { signal: AbortSignal.timeout(10000) });
                         if (!resp.ok) {
-                            // 可能是目录不存在或者没有index.html，尝试直接获取index.html
                             if (dirUrl.endsWith('/')) {
                                 const indexPath = dirUrl + 'index.html';
                                 try {
@@ -339,13 +336,8 @@
                                         const html = await idxResp.text();
                                         const title = extractTitle(html);
                                         if (!discoveredFiles.some(f => f.path === indexPath)) {
-                                            discoveredFiles.push({
-                                                path: indexPath,
-                                                dirPath: dirUrl,
-                                                title: title
-                                            });
+                                            discoveredFiles.push({ path: indexPath, dirPath: dirUrl, title: title });
                                         }
-                                        // 从index.html中提取链接
                                         const links = extractAllLinks(html, dirUrl);
                                         for (const f of links.files) {
                                             if (!discoveredFiles.some(ex => ex.path === f.path)) {
@@ -353,9 +345,7 @@
                                             }
                                         }
                                         for (const d of links.directories) {
-                                            if (!visitedDirs.has(d) && !queue.includes(d)) {
-                                                queue.push(d);
-                                            }
+                                            if (!visitedDirs.has(d) && !queue.includes(d)) queue.push(d);
                                         }
                                     }
                                 } catch (e) {}
@@ -367,52 +357,31 @@
                         if (!contentType.includes('text/html')) continue;
                         const html = await resp.text();
 
-                        // 无论是否为目录列表，都进行链接提取
                         const links = extractAllLinks(html, dirUrl);
                         for (const f of links.files) {
-                            if (!discoveredFiles.some(ex => ex.path === f.path)) {
-                                discoveredFiles.push(f);
-                            }
+                            if (!discoveredFiles.some(ex => ex.path === f.path)) discoveredFiles.push(f);
                         }
                         for (const d of links.directories) {
-                            if (!visitedDirs.has(d) && !queue.includes(d)) {
-                                queue.push(d);
-                            }
+                            if (!visitedDirs.has(d) && !queue.includes(d)) queue.push(d);
                         }
 
-                        // 如果是目录列表，还可能有直接的子目录列表，但我们已经通过链接提取覆盖了
-                        // 如果当前页面本身就是一个.html文件（非index.html），也需要记录
                         if (dirUrl.endsWith('.html') || dirUrl.endsWith('.htm')) {
                             if (!discoveredFiles.some(f => f.path === dirUrl)) {
-                                discoveredFiles.push({
-                                    path: dirUrl,
-                                    dirPath: dirUrl.substring(0, dirUrl.lastIndexOf('/') + 1),
-                                    title: extractTitle(html)
-                                });
+                                discoveredFiles.push({ path: dirUrl, dirPath: dirUrl.substring(0, dirUrl.lastIndexOf('/') + 1), title: extractTitle(html) });
                             }
                         } else if (dirUrl.endsWith('/')) {
-                            // 尝试记录可能的index.html
                             const indexPath = dirUrl + 'index.html';
-                            if (!discoveredFiles.some(f => f.path === indexPath) && html) {
-                                // 检查一下HTML中是否包含明显的页面特征，若是则可能本身就是index.html
-                                if (html.includes('<title>') || html.includes('<body')) {
-                                    discoveredFiles.push({
-                                        path: indexPath,
-                                        dirPath: dirUrl,
-                                        title: extractTitle(html)
-                                    });
-                                }
+                            if (!discoveredFiles.some(f => f.path === indexPath) && html.includes('<title>')) {
+                                discoveredFiles.push({ path: indexPath, dirPath: dirUrl, title: extractTitle(html) });
                             }
                         }
                     } catch (e) {
                         console.warn(`访问 ${dirUrl} 失败:`, e.message);
                     }
                 }
-
                 return { files: discoveredFiles };
             }
 
-            // File API 扫描 (file:// 协议)
             function scanViaFileAPI(fileList) {
                 const files = [];
                 const dirs = new Set();
@@ -436,7 +405,6 @@
                 });
             }
 
-            // 缓存
             function loadCache() {
                 try {
                     const raw = localStorage.getItem(CACHE_KEY);
@@ -446,6 +414,7 @@
                     return cache;
                 } catch { return null; }
             }
+
             function saveCache(files, method) {
                 try {
                     localStorage.setItem(CACHE_KEY, JSON.stringify({
@@ -456,7 +425,6 @@
                 } catch {}
             }
 
-            // 异步获取标题
             async function fetchTitles(fileList, mode) {
                 const needTitle = fileList.filter(f => !f.title);
                 if (needTitle.length === 0) return;
@@ -485,17 +453,19 @@
                 renderCards(getFilteredFiles());
             }
 
-            // 渲染
             function renderStats(total, dirs, src) {
                 statTotal.textContent = total;
                 statDirs.textContent = dirs;
                 statSource.textContent = src;
                 countAll.textContent = total;
             }
+
             function renderFilters() {
                 const map = new Map();
                 allFiles.forEach(f => {
                     let rel = (f.dirPath || '').replace(/^\.\/html\/?/, '').replace(/\/$/, '') || '(根目录)';
+                    // 对目录名也尝试解码，便于显示
+                    try { rel = decodeURIComponent(rel); } catch(e) {}
                     if (!map.has(rel)) map.set(rel, { count: 0, dir: f.dirPath });
                     map.get(rel).count++;
                 });
@@ -512,18 +482,23 @@
                     });
                 });
             }
+
             function getFilteredFiles() {
                 let list = allFiles;
                 if (currentFilter !== 'all') list = list.filter(f => (f.dirPath||'') === currentFilter);
                 const q = searchInput.value.trim().toLowerCase();
                 if (q) {
                     list = list.filter(f => {
-                        const name = (f.path||'').split('/').pop().toLowerCase();
-                        return name.includes(q) || f.path.toLowerCase().includes(q) || (f.title||'').toLowerCase().includes(q);
+                        // 搜索时对路径解码后再匹配，方便用户用中文搜索
+                        let decodedPath = f.path;
+                        try { decodedPath = decodeURIComponent(f.path); } catch(e) {}
+                        const name = decodedPath.split('/').pop().toLowerCase();
+                        return name.includes(q) || decodedPath.toLowerCase().includes(q) || (f.title||'').toLowerCase().includes(q);
                     });
                 }
                 return list;
             }
+
             function renderCards(files) {
                 if (allFiles.length === 0) {
                     filesContainer.innerHTML = '<div class="empty-state">📭 暂无HTML文件，请点击“刷新扫描”</div>';
@@ -535,10 +510,14 @@
                 }
                 let cards = '<div class="files-grid">';
                 files.forEach(f => {
-                    const name = f.path.split('/').pop();
-                    const displayName = beautifyName(name);
-                    const displayPath = f.path.replace(/^\.\/html\/?/, 'html/');
-                    const title = f.title ? `📄 ${escapeHtml(f.title)}` : `<span style="color:var(--text-muted)">${escapeHtml(name)}</span>`;
+                    // 文件名保持编码后的 href，显示时解码
+                    const encodedName = f.path.split('/').pop();
+                    const displayName = beautifyName(encodedName);
+                    // 路径显示也解码（但保留原始路径用于href）
+                    let decodedPath = f.path;
+                    try { decodedPath = decodeURIComponent(f.path); } catch(e) {}
+                    const displayPath = decodedPath.replace(/^\.\/html\/?/, 'html/');
+                    const title = f.title ? `📄 ${escapeHtml(f.title)}` : `<span style="color:var(--text-muted)">${escapeHtml(encodedName)}</span>`;
                     cards += `
                     <a class="file-card" href="${escapeHtml(f.path)}" target="_blank" rel="noopener">
                         <div style="display:flex;align-items:center;gap:12px;">
@@ -554,9 +533,13 @@
                 cards += '</div>';
                 filesContainer.innerHTML = cards;
             }
-            function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-            // 主流程
+            function escapeHtml(s) {
+                const d = document.createElement('div');
+                d.textContent = s;
+                return d.innerHTML;
+            }
+
             async function performScan(forcePicker = false) {
                 if (isScanning) return;
                 isScanning = true;
@@ -615,11 +598,9 @@
                 isScanning = false;
             }
 
-            // 事件
             btnRefresh.addEventListener('click', () => performScan());
             searchInput.addEventListener('input', () => renderCards(getFilteredFiles()));
 
-            // 初始化
             (async function init() {
                 const cache = loadCache();
                 if (cache && cache.files.length) {
@@ -629,7 +610,6 @@
                     renderFilters();
                     renderCards(getFilteredFiles());
                     if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-                        // 后台静默更新
                         setTimeout(() => performScan(), 500);
                     }
                 } else if (window.location.protocol === 'file:') {
