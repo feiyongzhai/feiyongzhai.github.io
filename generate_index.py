@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-自动生成 HTML 索引页（v2 修复子目录问题）
-遍历指定目录下所有 .html/.htm 文件，生成包含相对链接的索引页。
-确保所有文件（包括深层子目录）都能被前端爬虫发现。
+自动生成 HTML 索引页（v3 - 修复中文路径编码问题）
+遍历指定目录下所有 .html/.htm 文件，生成带有正确 URL 编码的索引页。
+确保中文文件名在链接中可正常访问，且显示文本保持原始可读性。
 """
 
 import sys
 from pathlib import Path
 import re
 import argparse
+from urllib.parse import quote
 
 def extract_title(file_path: Path) -> str:
     """提取 HTML 文件的 <title> 内容，若失败返回文件名"""
@@ -30,12 +31,10 @@ def generate_index(scan_dir: str, output_path: str, exclude_self: bool = True):
         print(f'❌ 错误：扫描目录不存在 "{scan_dir}"')
         sys.exit(1)
 
-    # 使用 rglob 递归查找所有 html 文件
-    pattern = '**/*.html'
-    all_html = [p for p in scan_dir.rglob('*.html')]
-    all_html += [p for p in scan_dir.rglob('*.htm')]
-    # 去重并排序
-    all_html = sorted(set(all_html))
+    # 递归查找所有 html/htm 文件
+    all_html = sorted(set(
+        list(scan_dir.rglob('*.html')) + list(scan_dir.rglob('*.htm'))
+    ))
 
     # 排除自身
     if exclude_self:
@@ -43,30 +42,37 @@ def generate_index(scan_dir: str, output_path: str, exclude_self: bool = True):
 
     if not all_html:
         print(f'⚠️ 在 {scan_dir} 中未找到任何 .html 文件。')
-        # 仍然生成一个空索引
         links = []
     else:
         print(f'🔍 找到 {len(all_html)} 个 HTML 文件：')
         links = []
         for html_file in all_html:
             try:
-                # 计算相对路径（相对于输出索引所在的目录）
-                rel_path = html_file.relative_to(output_dir)
-                # 转换为 POSIX 风格（URL 标准）
-                rel_url = rel_path.as_posix()
+                # 相对路径（POSIX 风格）
+                rel_path = html_file.relative_to(output_dir).as_posix()
+                
+                # URL 编码：保留 / 和 . 等安全字符，编码中文等非 ASCII 字符
+                encoded_path = quote(rel_path, safe='/:.')
+                
+                # 显示名称优先使用标题，否则使用原始文件名（未编码）
                 title = extract_title(html_file)
-                links.append((rel_url, title, html_file))
-                print(f'   ├─ {rel_url}  →  "{title}"')
+                if not title or title == html_file.name:
+                    display_name = html_file.name  # 原始文件名（含中文）
+                else:
+                    display_name = title  # 提取出的标题
+
+                links.append((encoded_path, display_name, html_file))
+                print(f'   ├─ {rel_path}  →  "{display_name}"')
             except ValueError as e:
                 print(f'   ⚠️ 无法计算相对路径，跳过：{html_file} ({e})')
 
     # 生成 HTML
     links_html = ''
-    for href, title, _ in links:
+    for href, display_name, _ in links:
         # 安全转义
         safe_href = href.replace('&', '&amp;').replace('"', '&quot;')
-        safe_title = title.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        links_html += f'            <li><a href="{safe_href}">{safe_title}</a></li>\n'
+        safe_name = display_name.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        links_html += f'            <li><a href="{safe_href}">{safe_name}</a></li>\n'
 
     html_content = f'''<!DOCTYPE html>
 <html lang="zh-CN">
@@ -98,10 +104,10 @@ def generate_index(scan_dir: str, output_path: str, exclude_self: bool = True):
     output_file.parent.mkdir(parents=True, exist_ok=True)
     output_file.write_text(html_content, encoding='utf-8')
     print(f'\n✅ 索引生成成功：{output_file}')
-    print(f'   包含 {len(links)} 个链接，覆盖了所有子目录中的 HTML 文件。')
+    print(f'   包含 {len(links)} 个链接，中文路径已正确编码。')
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='生成 HTML 文件索引页（v2）')
+    parser = argparse.ArgumentParser(description='生成 HTML 文件索引页（v3）')
     parser.add_argument('--dir', default='./html', help='要扫描的目录（默认：./html）')
     parser.add_argument('--output', default='./html/index.html', help='输出的索引文件路径（默认：./html/index.html）')
     parser.add_argument('--include-self', action='store_true', help='是否包含自身链接')
