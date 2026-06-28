@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>棋类游戏 · 围棋 / 五子棋 / 象棋 / 飞行棋</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(145deg, #2d2418 0%, #4a3728 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            user-select: none;
+        }
+        .game-container {
+            background: linear-gradient(180deg, #d4a56a 0%, #c4905a 100%);
+            border-radius: 32px;
+            padding: 25px 30px 30px 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 0 2px #8b6b44 inset, 0 0 0 4px #b58a56 inset;
+            display: inline-block;
+            max-width: 850px;
+            width: 100%;
+        }
+        .game-wrapper {
+            background: #e8c88a;
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 0 0 2px #a8804a inset;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 4px 14px 4px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .title-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #3d2817;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 2px rgba(255, 215, 140, 0.3);
+        }
+        .game-selector {
+            display: flex;
+            gap: 6px;
+            background: rgba(60, 40, 20, 0.25);
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 200, 120, 0.15);
+            flex-wrap: wrap;
+        }
+        .game-selector button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: transparent;
+            color: #3d2817;
+            transition: all 0.2s;
+        }
+        .game-selector button.active {
+            background: #5a3d28;
+            color: #f0e0c8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .game-selector button:hover:not(.active) {
+            background: rgba(60, 40, 20, 0.2);
+        }
+        .game-selector button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .info-bar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .turn-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(60, 40, 20, 0.35);
+            padding: 5px 14px 5px 12px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 200, 120, 0.2);
+        }
+        .turn-label {
+            font-size: 13px;
+            color: #3d2817;
+            font-weight: 600;
+        }
+        .turn-stone {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            transition: all 0.2s;
+        }
+        .turn-stone.black { background: radial-gradient(circle at 35% 35%, #666, #111 70%); box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+        .turn-stone.white { background: radial-gradient(circle at 35% 35%, #fff, #ccc 70%); box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .turn-stone.red { background: radial-gradient(circle at 35% 35%, #e55, #a22 70%); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+        .turn-stone.blue { background: radial-gradient(circle at 35% 35%, #66b, #226 70%); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+        .turn-stone.yellow { background: radial-gradient(circle at 35% 35%, #ee5, #aa2 70%); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+        .turn-stone.green { background: radial-gradient(circle at 35% 35%, #5b5, #262 70%); box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+
+        .captures {
+            display: flex;
+            gap: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #3d2817;
+            background: rgba(60, 40, 20, 0.25);
+            padding: 5px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 200, 120, 0.15);
+        }
+        .captures span { display: flex; align-items: center; gap: 5px; }
+        .captures .count { font-weight: 700; font-size: 15px; min-width: 18px; text-align: center; }
+        .captures .dot { display: inline-block; width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); }
+        .dot.black { background: radial-gradient(circle at 35% 35%, #555, #111 70%); }
+        .dot.white { background: radial-gradient(circle at 35% 35%, #fff, #bbb 70%); }
+        .dot.red { background: radial-gradient(circle at 35% 35%, #e55, #a22 70%); }
+        .dot.blue { background: radial-gradient(circle at 35% 35%, #66b, #226 70%); }
+        .dot.yellow { background: radial-gradient(circle at 35% 35%, #ee5, #aa2 70%); }
+        .dot.green { background: radial-gradient(circle at 35% 35%, #5b5, #262 70%); }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 6px 16px;
+            border: none;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(60, 40, 20, 0.4);
+            color: #3d2817;
+            border: 1px solid rgba(255, 200, 120, 0.2);
+            backdrop-filter: blur(4px);
+        }
+        .btn:hover { background: rgba(60, 40, 20, 0.6); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(0px); }
+        .btn-primary { background: #5a3d28; color: #f0e0c8; border-color: #7a5a3a; }
+        .btn-primary:hover { background: #6d4d35; color: #fff; }
+        .btn-danger { background: #8b3a2a; color: #f0e0c8; border-color: #aa5a4a; }
+        .btn-danger:hover { background: #a04a3a; color: #fff; }
+        .btn-success { background: #2d6a3a; color: #f0e0c8; border-color: #4a8a5a; }
+        .btn-success:hover { background: #3a7a4a; color: #fff; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .board-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 12px;
+            box-shadow: 0 0 0 2px #6a4f30 inset, 0 10px 30px rgba(0,0,0,0.3);
+            background: #dbb07c;
+            line-height: 0;
+            width: 100%;
+        }
+        #goCanvas {
+            display: block;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #dbb07c;
+            touch-action: none;
+            width: 100%;
+            height: auto;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            padding-left: 4px;
+            padding-right: 4px;
+            color: #3d2817;
+            font-size: 14px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .status-msg {
+            font-weight: 500;
+            background: rgba(60, 40, 20, 0.2);
+            padding: 4px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 200, 120, 0.1);
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        .fly-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .fly-controls .dice {
+            font-size: 28px;
+            font-weight: 700;
+            min-width: 40px;
+            text-align: center;
+            background: rgba(60,40,20,0.2);
+            border-radius: 12px;
+            padding: 0 8px;
+            line-height: 1.4;
+        }
+        .score-display {
+            display: flex;
+            gap: 14px;
+            font-weight: 600;
+            background: rgba(60, 40, 20, 0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 200, 120, 0.1);
+        }
+        .score-display span { display: flex; align-items: center; gap: 4px; }
+        .footer-note {
+            text-align: center;
+            padding-top: 10px;
+            font-size: 12px;
+            color: rgba(60, 40, 20, 0.5);
+            letter-spacing: 1px;
+        }
+        .player-count-selector {
+            display: flex;
+            gap: 4px;
+            background: rgba(60,40,20,0.2);
+            border-radius: 20px;
+            padding: 2px;
+        }
+        .player-count-selector button {
+            border: none;
+            background: transparent;
+            padding: 4px 10px;
+            border-radius: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #3d2817;
+            font-size: 13px;
+        }
+        .player-count-selector button.active {
+            background: #5a3d28;
+            color: #f0e0c8;
+        }
+        @media (max-width: 700px) {
+            .game-container { padding: 12px; border-radius: 20px; }
+            .game-wrapper { padding: 8px; }
+            .header { flex-direction: column; align-items: stretch; gap: 8px; }
+            .title-area { justify-content: center; }
+            .title { font-size: 20px; }
+            .info-bar { justify-content: center; }
+            .btn-group { justify-content: center; }
+            .status-bar { flex-direction: column; align-items: stretch; gap: 4px; }
+            .status-msg { justify-content: center; }
+            .score-display { justify-content: center; }
+            .fly-controls { justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .game-container { padding: 8px; }
+            .game-wrapper { padding: 4px; }
+            .title { font-size: 17px; }
+            .game-selector button { padding: 4px 8px; font-size: 12px; }
+            .turn-indicator { padding: 3px 10px; }
+            .captures { padding: 3px 10px; font-size: 11px; gap: 8px; }
+            .btn { padding: 4px 12px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-wrapper">
+            <div class="header">
+                <div class="title-area">
+                    <div class="title">♟ 棋类</div>
+                    <div class="game-selector" id="gameSelector">
+                        <button data-game="go">围棋</button>
+                        <button data-game="gomoku">五子棋</button>
+                        <button data-game="chess">象棋</button>
+                        <button data-game="fly" class="active">飞行棋</button>
+                    </div>
+                </div>
+                <div class="info-bar">
+                    <div class="turn-indicator">
+                        <span class="turn-label">回合</span>
+                        <span class="turn-stone red" id="turnStone"></span>
+                        <span id="turnText" style="font-weight:700;color:#3d2817;">红棋</span>
+                    </div>
+                    <div class="captures" id="capturesArea" style="display:none;">
+                        <span><span class="dot black"></span><span class="count" id="blackCap">0</span></span>
+                        <span><span class="dot white"></span><span class="count" id="whiteCap">0</span></span>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="btnUndo">↩ 悔棋</button>
+                        <button class="btn btn-danger" id="btnReset">⟳ 新局</button>
+                    </div>
+                </div>
+            </div>
+            <div class="board-wrapper">
+                <canvas id="goCanvas" width="720" height="720"></canvas>
+            </div>
+            <div class="status-bar">
+                <div class="status-msg" id="statusMsg">🎲 点击掷骰</div>
+                <div class="fly-controls" id="flyControls">
+                    <button class="btn btn-success" id="btnRoll">🎲 掷骰</button>
+                    <span class="dice" id="diceDisplay">⚀</span>
+                    <div class="player-count-selector" id="playerCountSelector">
+                        <button data-count="2">2人</button>
+                        <button data-count="3">3人</button>
+                        <button data-count="4" class="active">4人</button>
+                    </div>
+                </div>
+                <div class="score-display" id="scoreDisplay" style="display:none;">
+                    <span>⚫ <span id="scoreBlack">0</span></span>
+                    <span>⚪ <span id="scoreWhite">0</span></span>
+                </div>
+            </div>
+            <div class="footer-note" id="footerNote">双人轮流 · 点击交叉点落子</div>
+        </div>
+    </div>
+    <script>
+        // ================================================================
+        //  多棋种游戏：围棋、五子棋、中国象棋、飞行棋
+        // ================================================================
+
+        const canvas = document.getElementById('goCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width,
+            H = canvas.height;
+
+        // ---- DOM 引用 ----
+        const turnStone = document.getElementById('turnStone');
+        const turnText = document.getElementById('turnText');
+        const blackCapEl = document.getElementById('blackCap');
+        const whiteCapEl = document.getElementById('whiteCap');
+        const statusMsg = document.getElementById('statusMsg');
+        const scoreBlack = document.getElementById('scoreBlack');
+        const scoreWhite = document.getElementById('scoreWhite');
+        const btnReset = document.getElementById('btnReset');
+        const btnUndo = document.getElementById('btnUndo');
+        const capturesArea = document.getElementById('capturesArea');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const footerNote = document.getElementById('footerNote');
+        const selectorButtons = document.querySelectorAll('.game-selector button');
+        const btnRoll = document.getElementById('btnRoll');
+        const diceDisplay = document.getElementById('diceDisplay');
+        const playerCountSelector = document.getElementById('playerCountSelector');
+
+        // ---- 游戏类型 ----
+        let gameType = 'fly'; // 'go' | 'gomoku' | 'chess' | 'fly'
+
+        // ---- 通用状态 ----
+        let board = [];
+        let currentPlayer = 1; // 1=黑/红, 2=白/蓝
+        let captured = { 1: 0, 2: 0 };
+        let lastMove = null;
+        let moveHistory = [];
+        let gameOver = false;
+        let hoverPos = null;
+        // 围棋专用
+        let lastCaptured = [];
+        // 五子棋专用
+        let winCells = [];
+
+        // ---- 中国象棋专用 ----
+        const CHESS_ROWS = 10,
+            CHESS_COLS = 9;
+        let chessBoard = [];
+        let selectedPos = null;
+        let validMoves = [];
+        let chessHistory = [];
+        const CHESS_TYPES = { KING: 'king', ADVISOR: 'advisor', ELEPHANT: 'elephant', HORSE: 'horse', ROOK: 'rook',
+            CANNON: 'cannon', PAWN: 'pawn' };
+        const RED = 'red',
+            BLACK = 'black';
+
+        // ---- 飞行棋专用 ----
+        let flyState = null; // 存储所有飞行棋状态
+
+        // ---- 尺寸配置 ----
+        let BOARD_SIZE = 19,
+            CELL_SIZE = 33,
+            MARGIN = 26;
+
+        // ---- 选择器切换 ----
+        selectorButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.game;
+                if (type === gameType) return;
+                selectorButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameType = type;
+                resetGame();
+                updateUIMode();
+                setStatus(`🔄 切换到 ${btn.textContent}`);
+            });
+        });
+
+        // ---- 玩家数量选择 ----
+        let playerCount = 4;
+        playerCountSelector.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (gameType !== 'fly') return;
+                playerCountSelector.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                playerCount = parseInt(btn.dataset.count);
+                resetGame();
+                setStatus(`🔄 已切换为 ${playerCount}人模式`);
+            });
+        });
+
+        // ---- 初始化棋盘 ----
+        function initBoard() {
+            if (gameType === 'go') {
+                BOARD_SIZE = 19;
+                CELL_SIZE = 33;
+                MARGIN = 26;
+                board = Array.from({ length: BOARD_SIZE }, () => new Array(BOARD_SIZE).fill(0));
+            } else if (gameType === 'gomoku') {
+                BOARD_SIZE = 15;
+                CELL_SIZE = 42;
+                MARGIN = 22;
+                board = Array.from({ length: BOARD_SIZE }, () => new Array(BOARD_SIZE).fill(0));
+            } else if (gameType === 'chess') {
+                initChessBoard();
+            } else if (gameType === 'fly') {
+                initFlyGame();
+            }
+        }
+
+        // ---- 中国象棋初始化 ----
+        function initChessBoard() {
+            chessBoard = Array.from({ length: CHESS_ROWS }, () => new Array(CHESS_COLS).fill(null));
+            const redBack = [7, 8, 9];
+            const redPieces = [
+                { type: CHESS_TYPES.ROOK, row: 9, col: 0 }, { type: CHESS_TYPES.HORSE, row: 9, col: 1 },
+                { type: CHESS_TYPES.ELEPHANT, row: 9, col: 2 }, { type: CHESS_TYPES.ADVISOR, row: 9, col: 3 },
+                { type: CHESS_TYPES.KING, row: 9, col: 4 }, { type: CHESS_TYPES.ADVISOR, row: 9, col: 5 },
+                { type: CHESS_TYPES.ELEPHANT, row: 9, col: 6 }, { type: CHESS_TYPES.HORSE, row: 9, col: 7 },
+                { type: CHESS_TYPES.ROOK, row: 9, col: 8 }, { type: CHESS_TYPES.CANNON, row: 7, col: 1 },
+                { type: CHESS_TYPES.CANNON, row: 7, col: 7 }, { type: CHESS_TYPES.PAWN, row: 6, col: 0 },
+                { type: CHESS_TYPES.PAWN, row: 6, col: 2 }, { type: CHESS_TYPES.PAWN, row: 6, col: 4 },
+                { type: CHESS_TYPES.PAWN, row: 6, col: 6 }, { type: CHESS_TYPES.PAWN, row: 6, col: 8 },
+            ];
+            for (const p of redPieces) chessBoard[p.row][p.col] = { type: p.type, color: RED };
+            const blackPieces = [
+                { type: CHESS_TYPES.ROOK, row: 0, col: 0 }, { type: CHESS_TYPES.HORSE, row: 0, col: 1 },
+                { type: CHESS_TYPES.ELEPHANT, row: 0, col: 2 }, { type: CHESS_TYPES.ADVISOR, row: 0, col: 3 },
+                { type: CHESS_TYPES.KING, row: 0, col: 4 }, { type: CHESS_TYPES.ADVISOR, row: 0, col: 5 },
+                { type: CHESS_TYPES.ELEPHANT, row: 0, col: 6 }, { type: CHESS_TYPES.HORSE, row: 0, col: 7 },
+                { type: CHESS_TYPES.ROOK, row: 0, col: 8 }, { type: CHESS_TYPES.CANNON, row: 2, col: 1 },
+                { type: CHESS_TYPES.CANNON, row: 2, col: 7 }, { type: CHESS_TYPES.PAWN, row: 3, col: 0 },
+                { type: CHESS_TYPES.PAWN, row: 3, col: 2 }, { type: CHESS_TYPES.PAWN, row: 3, col: 4 },
+                { type: CHESS_TYPES.PAWN, row: 3, col: 6 }, { type: CHESS_TYPES.PAWN, row: 3, col: 8 },
+            ];
+            for (const p of blackPieces) chessBoard[p.row][p.col] = { type: p.type, color: BLACK };
+        }
+
+        // ---- 飞行棋初始化 ----
+        function initFlyGame() {
+            const colors = ['red', 'blue', 'yellow', 'green'];
+            const names = ['红', '蓝', '黄', '绿'];
+            const players = [];
+            for (let i = 0; i < playerCount; i++) {
+                const planes = [];
+                for (let j = 0; j < 4; j++) planes.push(-1); // -1=未起飞
+                players.push({
+                    color: colors[i],
+                    name: names[i],
+                    planes: planes,
+                    finished: 0 // 到达终点的飞机数
+                });
+            }
+            flyState = {
+                players: players,
+                currentPlayer: 0,
+                diceValue: 0,
+                phase: 'roll', // 'roll' | 'select'
+                moveablePlanes: [], // 可移动的飞机索引列表
+                selectedPlane: -1,
+                canRoll: true,
+                pathPoints: generateFlyPathPoints(),
+                planeRadius: 16,
+                cellRadius: 22,
+                finishedCount: 0
+            };
+            // 为每个玩家分配起点索引
+            const startIndices = [0, 26, 13, 39]; // 红、蓝、黄、绿
+            flyState.startIndices = startIndices.slice(0, playerCount);
+            // 存储终点索引（起点+51）
+            flyState.endIndices = flyState.startIndices.map(s => (s + 51) % 52);
+            // 当前玩家已选择飞机索引
+            flyState.selectedPlane = -1;
+            // 重置
+            flyState.diceValue = 0;
+            flyState.phase = 'roll';
+            flyState.canRoll = true;
+            flyState.moveablePlanes = [];
+            flyState.finishedCount = 0;
+        }
+
+        // 生成52个路径点（顺时针，从右下角开始）
+        function generateFlyPathPoints() {
+            const margin = 80;
+            const size = W - 2 * margin;
+            const step = size / 13;
+            const pts = [];
+            // 右下角 (W-margin, H-margin)
+            let x = W - margin,
+                y = H - margin;
+            // 下边：从右向左
+            for (let i = 0; i < 13; i++) {
+                pts.push({ x, y });
+                x -= step;
+            }
+            // 左边：从下到上
+            for (let i = 0; i < 13; i++) {
+                pts.push({ x, y });
+                y -= step;
+            }
+            // 上边：从左到右
+            for (let i = 0; i < 13; i++) {
+                pts.push({ x, y });
+                x += step;
+            }
+            // 右边：从上到下
+            for (let i = 0; i < 13; i++) {
+                pts.push({ x, y });
+                y += step;
+            }
+            // 现在pts长度应为52
+            return pts;
+        }
+
+        // ---- 重置游戏 ----
+        function resetGame() {
+            initBoard();
+            currentPlayer = 1;
+            captured = { 1: 0, 2: 0 };
+            lastMove = null;
+            lastCaptured = [];
+            winCells = [];
+            moveHistory = [];
+            gameOver = false;
+            hoverPos = null;
+            selectedPos = null;
+            validMoves = [];
+            chessHistory = [];
+            if (gameType === 'fly') {
+                // 初始化已做
+                btnRoll.disabled = false;
+                diceDisplay.textContent = '⚀';
+                // 重置当前玩家显示
+                updateFlyUI();
+            }
+            updateUI();
+            render();
+            const name = getCurrentPlayerName();
+            setStatus(`🔄 新局 · ${name}落子`);
+            updateUIMode();
+        }
+
+        function getCurrentPlayerName() {
+            if (gameType === 'fly') {
+                if (!flyState) return '红';
+                const p = flyState.players[flyState.currentPlayer];
+                return p.name + '棋';
+            } else if (gameType === 'chess') {
+                return currentPlayer === 1 ? '红棋' : '黑棋';
+            } else {
+                return currentPlayer === 1 ? '黑棋' : '白棋';
+            }
+        }
+
+        // ---- UI模式 ----
+        function updateUIMode() {
+            const isFly = gameType === 'fly';
+            capturesArea.style.display = (gameType === 'go') ? 'flex' : 'none';
+            scoreDisplay.style.display = (gameType === 'go') ? 'flex' : 'none';
+            document.getElementById('flyControls').style.display = isFly ? 'flex' : 'none';
+            document.getElementById('playerCountSelector').style.display = isFly ? 'flex' : 'none';
+            if (isFly) {
+                footerNote.textContent = '🎲 掷骰选飞机 · 先到终点者获胜';
+                btnRoll.disabled = false;
+            } else if (gameType === 'go') {
+                footerNote.textContent = '双人轮流 · 点击交叉点落子 · 打劫规则已启用';
+            } else if (gameType === 'gomoku') {
+                footerNote.textContent = '双人轮流 · 先连成五子者获胜';
+            } else if (gameType === 'chess') {
+                footerNote.textContent = '双人轮流 · 红先黑后 · 吃掉将/帅获胜';
+            }
+            updateTurnIndicator();
+        }
+
+        function updateTurnIndicator() {
+            if (gameType === 'fly') {
+                if (!flyState) return;
+                const p = flyState.players[flyState.currentPlayer];
+                const color = p.color;
+                turnStone.className = `turn-stone ${color}`;
+                turnText.textContent = p.name + '棋';
+                return;
+            }
+            const isRed = currentPlayer === 1;
+            if (gameType === 'chess') {
+                turnStone.className = `turn-stone ${isRed ? 'red' : 'blue'}`;
+                turnText.textContent = isRed ? '红棋' : '黑棋';
+            } else {
+                turnStone.className = `turn-stone ${isRed ? 'black' : 'white'}`;
+                turnText.textContent = isRed ? '黑棋' : '白棋';
+            }
+        }
+
+        function updateFlyUI() {
+            if (!flyState) return;
+            updateTurnIndicator();
+            const p = flyState.players[flyState.currentPlayer];
+            setStatus(`🎲 ${p.name}棋掷骰`);
+            if (flyState.phase === 'roll') {
+                btnRoll.disabled = false;
+            } else {
+                btnRoll.disabled = true;
+            }
+            // 显示骰子
+            const diceSymbols = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+            if (flyState.diceValue > 0) {
+                diceDisplay.textContent = diceSymbols[flyState.diceValue - 1] || '⚀';
+            } else {
+                diceDisplay.textContent = '⚀';
+            }
+            // 更新玩家信息（可在状态栏显示完成数）
+            let msg = '';
+            for (let i = 0; i < flyState.players.length; i++) {
+                const pl = flyState.players[i];
+                msg += `${pl.name}${pl.finished}/4 `;
+            }
+            // 在状态栏额外显示
+            // 可在statusMsg中追加
+        }
+
+        // ---- 飞行棋核心逻辑 ----
+        function rollDice() {
+            if (gameType !== 'fly' || !flyState) return;
+            if (flyState.phase !== 'roll' || !flyState.canRoll) return;
+            if (gameOver) {
+                setStatus('⛔ 游戏已结束');
+                return;
+            }
+            const dice = Math.floor(Math.random() * 6) + 1;
+            flyState.diceValue = dice;
+            // 检查哪些飞机可移动
+            const playerIdx = flyState.currentPlayer;
+            const player = flyState.players[playerIdx];
+            const startIdx = flyState.startIndices[playerIdx];
+            const moveable = [];
+            for (let i = 0; i < player.planes.length; i++) {
+                const pos = player.planes[i];
+                if (pos === 52) continue; // 已完成
+                if (pos === -1) {
+                    if (dice === 6) moveable.push(i); // 起飞
+                } else {
+                    const newPos = pos + dice;
+                    if (newPos <= 52) moveable.push(i); // 可前进
+                }
+            }
+            if (moveable.length === 0) {
+                // 无飞机可动，切换下家
+                setStatus(`⏭️ 无飞机可动，切换`);
+                setTimeout(() => {
+                    nextFlyPlayer();
+                }, 300);
+                return;
+            }
+            flyState.moveablePlanes = moveable;
+            flyState.phase = 'select';
+            flyState.canRoll = false;
+            btnRoll.disabled = true;
+            setStatus(`🎲 掷出 ${dice}，请选择飞机`);
+            render();
+        }
+
+        function selectFlyPlane(planeIdx) {
+            if (gameType !== 'fly' || !flyState) return;
+            if (flyState.phase !== 'select') return;
+            const playerIdx = flyState.currentPlayer;
+            const player = flyState.players[playerIdx];
+            const dice = flyState.diceValue;
+            const pos = player.planes[planeIdx];
+            let newPos;
+            if (pos === -1) {
+                newPos = 0; // 起飞
+            } else {
+                newPos = pos + dice;
+            }
+            // 执行移动
+            player.planes[planeIdx] = newPos;
+            // 检查跳格（落在自己颜色段上且不是终点）
+            const startIdx = flyState.startIndices[playerIdx];
+            const endIdx = (startIdx + 51) % 52;
+            // 判断是否落在自己颜色段（起点到终点-1）
+            const isColorSegment = (newPos >= startIdx && newPos <= endIdx) || (startIdx > endIdx && (newPos >= startIdx ||
+                newPos <= endIdx));
+            // 检查跳格：落在自己颜色格子上（且不是起点？），且不是终点
+            if (newPos < 52 && newPos !== startIdx) {
+                // 检查该格颜色是否属于自己
+                const segment = Math.floor(newPos / 13);
+                const playerSeg = Math.floor(startIdx / 13);
+                if (segment === playerSeg) {
+                    // 跳4格
+                    let jump = newPos + 4;
+                    if (jump > 52) jump = 52;
+                    newPos = jump;
+                    player.planes[planeIdx] = newPos;
+                }
+            }
+            // 检查是否到达终点
+            if (newPos === 52) {
+                player.finished++;
+                flyState.finishedCount++;
+                setStatus(`🎉 ${player.name}棋到达终点！`);
+                if (player.finished === 4) {
+                    gameOver = true;
+                    setStatus(`🏆 ${player.name}棋获胜！`);
+                    btnRoll.disabled = true;
+                    render();
+                    return;
+                }
+                // 继续？
+                // 如果还有未完成的，切换
+                if (flyState.finishedCount === flyState.players.length * 4) {
+                    gameOver = true;
+                    setStatus('🏁 所有飞机到达终点');
+                    btnRoll.disabled = true;
+                    render();
+                    return;
+                }
+            }
+            // 检查踩子（非终点）
+            if (newPos < 52) {
+                for (let i = 0; i < flyState.players.length; i++) {
+                    if (i === playerIdx) continue;
+                    const other = flyState.players[i];
+                    for (let j = 0; j < other.planes.length; j++) {
+                        if (other.planes[j] === newPos && newPos !== -1) {
+                            other.planes[j] = -1; // 踢回起点
+                            setStatus(`💥 踩中 ${other.name}棋，踢回起点`);
+                        }
+                    }
+                }
+            }
+            // 清除选中状态
+            flyState.selectedPlane = -1;
+            flyState.moveablePlanes = [];
+            // 判断是否继续掷骰（掷到6且还有飞机可动？）
+            const canContinue = (dice === 6);
+            if (canContinue) {
+                // 检查是否还有可动飞机
+                const remaining = [];
+                for (let i = 0; i < player.planes.length; i++) {
+                    const p = player.planes[i];
+                    if (p === 52) continue;
+                    if (p === -1 && dice === 6) remaining.push(i);
+                    else if (p >= 0) {
+                        const np = p + dice;
+                        if (np <= 52) remaining.push(i);
+                    }
+                }
+                if (remaining.length > 0) {
+                    // 可以再掷
+                    flyState.phase = 'roll';
+                    flyState.canRoll = true;
+                    btnRoll.disabled = false;
+                    setStatus(`🎲 再掷一次`);
+                    render();
+                    return;
+                }
+            }
+            // 切换下家
+            nextFlyPlayer();
+        }
+
+        function nextFlyPlayer() {
+            if (gameOver) return;
+            if (!flyState) return;
+            // 找下一个有未完成飞机的玩家
+            let next = (flyState.currentPlayer + 1) % flyState.players.length;
+            let count = 0;
+            while (count < flyState.players.length) {
+                const p = flyState.players[next];
+                if (p.finished < 4) break;
+                next = (next + 1) % flyState.players.length;
+                count++;
+            }
+            if (count === flyState.players.length) {
+                // 所有人都完成了
+                gameOver = true;
+                setStatus('🏁 所有飞机到达终点');
+                btnRoll.disabled = true;
+                render();
+                return;
+            }
+            flyState.currentPlayer = next;
+            flyState.phase = 'roll';
+            flyState.canRoll = true;
+            flyState.diceValue = 0;
+            flyState.moveablePlanes = [];
+            flyState.selectedPlane = -1;
+            btnRoll.disabled = false;
+            diceDisplay.textContent = '⚀';
+            updateFlyUI();
+            render();
+            const name = flyState.players[next].name;
+            setStatus(`🎲 ${name}棋掷骰`);
+        }
+
+        // ---- 落子（通用入口） ----
+        function placeStone(row, col) {
+            if (gameOver) {
+                setStatus('⛔ 游戏已结束，请重新开始');
+                return false;
+            }
+            if (gameType === 'go') return placeGo(row, col);
+            else if (gameType === 'gomoku') return placeGomoku(row, col);
+            else if (gameType === 'chess') return placeChess(row, col);
+            else if (gameType === 'fly') {
+                // 飞行棋点击处理：检测点击到飞机
+                return handleFlyClick(row, col);
+            }
+            return false;
+        }
+
+        // ---- 飞行棋点击处理（在canvas点击时调用） ----
+        function handleFlyClick(row, col) {
+            if (!flyState || flyState.phase !== 'select') return false;
+            // 检测点击位置是否在可移动飞机上
+            const playerIdx = flyState.currentPlayer;
+            const player = flyState.players[playerIdx];
+            const moveable = flyState.moveablePlanes;
+            // 获取点击坐标
+            const rect = canvas.getBoundingClientRect();
+            // 但这里我们只能通过行列？实际上我们传递的是行列，但我们没有行列概念，我们需要从事件中获取实际坐标。
+            // 由于placeStone被调用时，row,col是棋盘坐标（对于飞行棋无意义），我们需要重写事件处理。
+            // 更好的方式：在canvas点击事件中，如果是飞行棋模式，直接调用flyClick处理，不经过placeStone。
+            // 我们修改事件监听。
+            return false;
+        }
+
+        // ---- 围棋落子 ----
+        function placeGo(row, col) {
+            if (board[row][col] !== 0) { setStatus('❌ 该位置已有棋子'); return false; }
+            const player = currentPlayer,
+                opponent = player === 1 ? 2 : 1;
+            if (!isValidMoveGo(row, col, player)) { setStatus('❌ 非法落子 (无气)'); return false; }
+            if (checkKo(row, col, player)) { setStatus('❌ 打劫规则禁止立即回提'); return false; }
+            const historyEntry = {
+                row,
+                col,
+                player,
+                captured: [],
+                boardState: board.map(r => [...r]),
+                capturedState: { ...captured },
+                lastMove: lastMove ? { ...lastMove } : null,
+                lastCaptured: lastCaptured.map(p => [...p])
+            };
+            board[row][col] = player;
+            let capturedThisTurn = [];
+            const dirs = [
+                [-1, 0],
+                [1, 0],
+                [0, -1],
+                [0, 1]
+            ];
+            for (const [dr, dc] of dirs) {
+                const nr = row + dr,
+                    nc = col + dc;
+                if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) continue;
+                if (board[nr][nc] === opponent) {
+                    const group = getGroup(nr, nc);
+                    const libs = getGroupLiberties(group);
+                    if (libs.length === 0) {
+                        const removed = removeGroup(group);
+                        capturedThisTurn.push(...removed);
+                    }
+                }
+            }
+            const myGroup = getGroup(row, col);
+            const myLibs = getGroupLiberties(myGroup);
+            if (myLibs.length === 0) { board[row][col] = 0;
+                setStatus('❌ 内部错误'); return false; }
+            captured[player] += capturedThisTurn.length;
+            historyEntry.captured = capturedThisTurn.map(p => [...p]);
+            moveHistory.push(historyEntry);
+            lastMove = { row, col };
+            lastCaptured = capturedThisTurn.map(p => [...p]);
+            currentPlayer = opponent;
+            updateUI();
+            render();
+            const name = player === 1 ? '黑' : '白';
+            let msg = `⚫ ${name}棋落子`;
+            if (capturedThisTurn.length > 0) msg += ` 提掉 ${capturedThisTurn.length} 子`;
+            setStatus(msg);
+            if (!hasLegalMove(currentPlayer)) {
+                const next = currentPlayer === 1 ? 2 : 1;
+                if (!hasLegalMove(next)) {
+                    gameOver = true;
+                    setStatus('🏁 游戏结束 · 双方无子可下');
+                    updateUI();
+                    render();
+                    calculateScoreGo();
+                    return true;
+                } else {
+                    setStatus(`⏭️ ${currentPlayer === 1 ? '黑' : '白'}棋无子可下，自动虚手`);
+                    currentPlayer = next;
+                    updateUI();
+                    render();
+                    placeStonePass();
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        function getGroup(r, c) {
+            const color = board[r][c];
+            if (color === 0) return [];
+            const visited = new Set(),
+                group = [],
+                queue = [
+                    [r, c]
+                ];
+            visited.add(`${r},${c}`);
+            while (queue.length) {
+                const [rr, cc] = queue.shift();
+                group.push([rr, cc]);
+                for (const [dr, dc] of [
+                        [-1, 0],
+                        [1, 0],
+                        [0, -1],
+                        [0, 1]
+                    ]) {
+                    const nr = rr + dr,
+                        nc = cc + dc;
+                    if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) continue;
+                    const key = `${nr},${nc}`;
+                    if (!visited.has(key) && board[nr][nc] === color) {
+                        visited.add(key);
+                        queue.push([nr, nc]);
+                    }
+                }
+            }
+            return group;
+        }
+
+        function getGroupLiberties(group) {
+            const libertySet = new Set();
+            for (const [r, c] of group) {
+                for (const [dr, dc] of [
+                        [-1, 0],
+                        [1, 0],
+                        [0, -1],
+                        [0, 1]
+                    ]) {
+                    const nr = r + dr,
+                        nc = c + dc;
+                    if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) continue;
+                    if (board[nr][nc] === 0) libertySet.add(`${nr},${nc}`);
+                }
+            }
+            return Array.from(libertySet).map(s => s.split(',').map(Number));
+        }
+
+        function removeGroup(group) {
+            const removed = [];
+            for (const [r, c] of group) { board[r][c] = 0;
+                removed.push([r, c]); }
+            return removed;
+        }
+
+        function isValidMoveGo(r, c, player) {
+            if (r < 0 || r >= BOARD_SIZE || c < 0 || c >= BOARD_SIZE || board[r][c] !== 0) return false;
+            board[r][c] = player;
+            const opponent = player === 1 ? 2 : 1;
+            let capturedOpponent = [];
+            for (const [dr, dc] of [
+                    [-1, 0],
+                    [1, 0],
+                    [0, -1],
+                    [0, 1]
+                ]) {
+                const nr = r + dr,
+                    nc = c + dc;
+                if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) continue;
+                if (board[nr][nc] === opponent) {
+                    const group = getGroup(nr, nc);
+                    if (getGroupLiberties(group).length === 0) {
+                        for (const [r2, c2] of group) capturedOpponent.push([r2, c2]);
+                    }
+                }
+            }
+            for (const [r2, c2] of capturedOpponent) board[r2][c2] = 0;
+            const myGroup = getGroup(r, c);
+            const valid = getGroupLiberties(myGroup).length > 0 || capturedOpponent.length > 0;
+            board[r][c] = 0;
+            for (const [r2, c2] of capturedOpponent) board[r2][c2] = opponent;
+            return valid;
+        }
+
+        function checkKo(r, c, player) {
+            if (!lastMove || lastCaptured.length !== 1) return false;
+            const [lr, lc] = lastMove,
+                [cr, cc] = lastCaptured[0];
+            if (r === cr && c === cc) {
+                const opponent = player === 1 ? 2 : 1;
+                board[r][c] = player;
+                let capturedNow = [];
+                for (const [dr, dc] of [
+                        [-1, 0],
+                        [1, 0],
+                        [0, -1],
+                        [0, 1]
+                    ]) {
+                    const nr = r + dr,
+                        nc = c + dc;
+                    if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) continue;
+                    if (board[nr][nc] === opponent) {
+                        const group = getGroup(nr, nc);
+                        if (getGroupLiberties(group).length === 0) {
+                            for (const [r2, c2] of group) capturedNow.push([r2, c2]);
+                        }
+                    }
+                }
+                board[r][c] = 0;
+                if (capturedNow.length === 1 && capturedNow[0][0] === lr && capturedNow[0][1] === lc) return true;
+            }
+            return false;
+        }
+
+        function hasLegalMove(player) {
+            for (let r = 0; r < BOARD_SIZE; r++)
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if (board[r][c] === 0 && isValidMoveGo(r, c, player) && !checkKo(r, c, player)) return true;
+                }
+            return false;
+        }
+
+        function placeStonePass() {
+            if (gameOver) return;
+            if (!hasLegalMove(currentPlayer)) {
+                const next = currentPlayer === 1 ? 2 : 1;
+                if (!hasLegalMove(next)) {
+                    gameOver = true;
+                    setStatus('🏁 游戏结束 · 双方无子可下');
+                    updateUI();
+                    render();
+                    calculateScoreGo();
+                    return;
+                } else {
+                    setStatus(`⏭️ ${currentPlayer === 1 ? '黑' : '白'}棋无子可下，自动虚手`);
+                    currentPlayer = next;
+                    updateUI();
+                    render();
+                    placeStonePass();
+                    return;
+                }
+            }
+            const name = currentPlayer === 1 ? '黑' : '白';
+            setStatus(`⚫ ${name}棋落子`);
+        }
+
+        function calculateScoreGo() {
+            const territory = { 1: 0, 2: 0 };
+            const visited = new Set();
+            for (let r = 0; r < BOARD_SIZE; r++)
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if (board[r][c] === 0 && !visited.has(`${r},${c}`)) {
+                        const queue = [
+                            [r, c]
+                        ];
+                        const region = [];
+                        let borderColors = new Set();
+                        visited.add(`${r},${c}`);
+                        while (queue.length) {
+                            const [cr, cc] = queue.shift();
+                            region.push([cr, cc]);
+                            for (const [dr, dc] of [
+                                    [-1, 0],
+                                    [1, 0],
+                                    [0, -1],
+                                    [0, 1]
+                                ]) {
+                                const nr = cr + dr,
+                                    nc = cc + dc;
+                                if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) continue;
+                                const key = `${nr},${nc}`;
+                                if (board[nr][nc] === 0) {
+                                    if (!visited.has(key)) { visited.add(key);
+                                        queue.push([nr, nc]); }
+                                } else {
+                                    borderColors.add(board[nr][nc]);
+                                }
+                            }
+                        }
+                        if (borderColors.size === 1) {
+                            const color = borderColors.values().next().value;
+                            territory[color] = (territory[color] || 0) + region.length;
+                        } else if (borderColors.size === 0) {} else {
+                            const half = region.length / 2;
+                            territory[1] = (territory[1] || 0) + half;
+                            territory[2] = (territory[2] || 0) + half;
+                        }
+                    }
+                }
+            let stoneCount = { 1: 0, 2: 0 };
+            for (let r = 0; r < BOARD_SIZE; r++)
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if (board[r][c] === 1) stoneCount[1]++;
+                    if (board[r][c] === 2) stoneCount[2]++;
+                }
+            const total1 = stoneCount[1] + territory[1],
+                total2 = stoneCount[2] + territory[2];
+            scoreBlack.textContent = Math.round(total1);
+            scoreWhite.textContent = Math.round(total2);
+            const diff = total1 - total2;
+            let result = '';
+            if (Math.abs(diff) < 0.5) result = '🤝 平局';
+            else if (diff > 0) result = `⚫ 黑胜 ${diff.toFixed(1)} 子`;
+            else result = `⚪ 白胜 ${(-diff).toFixed(1)} 子`;
+            setStatus(`🏁 终局 · ${result}`);
+            gameOver = true;
+            updateUI();
+            render();
+        }
+
+        // ---- 五子棋落子 ----
+        function placeGomoku(row, col) {
+            if (board[row][col] !== 0) { setStatus('❌ 该位置已有棋子'); return false; }
+            const player = currentPlayer,
+                opponent = player === 1 ? 2 : 1;
+            board[row][col] = player;
+            moveHistory.push({ row, col, player, boardState: board.map(r => [...r]), capturedState: { ...captured },
+                lastMove: lastMove ? { ...lastMove } : null });
+            lastMove = { row, col };
+            const win = checkWin(row, col, player);
+            if (win) { winCells = win;
+                gameOver = true;
+                const name = player === 1 ? '黑' : '白';
+                setStatus(`🏆 ${name}棋获胜！`);
+                updateUI();
+                render();
+                return true; }
+            let empty = 0;
+            for (let r = 0; r < BOARD_SIZE; r++)
+                for (let c = 0; c < BOARD_SIZE; c++) { if (board[r][c] === 0) empty++; }
+            if (empty === 0) { gameOver = true;
+                setStatus('🤝 平局！棋盘已满');
+                updateUI();
+                render();
+                return true; }
+            currentPlayer = opponent;
+            updateUI();
+            render();
+            const name = player === 1 ? '黑' : '白';
+            setStatus(`⚫ ${name}棋落子`);
+            return true;
+        }
+
+        function checkWin(row, col, player) {
+            const dirs = [
+                [1, 0],
+                [0, 1],
+                [1, 1],
+                [1, -1]
+            ];
+            for (const [dr, dc] of dirs) {
+                let cells = [
+                    [row, col]
+                ];
+                for (let step = 1; step < 5; step++) {
+                    const nr = row + dr * step,
+                        nc = col + dc * step;
+                    if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) break;
+                    if (board[nr][nc] === player) cells.push([nr, nc]);
+                    else break;
+                }
+                for (let step = 1; step < 5; step++) {
+                    const nr = row - dr * step,
+                        nc = col - dc * step;
+                    if (nr < 0 || nr >= BOARD_SIZE || nc < 0 || nc >= BOARD_SIZE) break;
+                    if (board[nr][nc] === player) cells.push([nr, nc]);
+                    else break;
+                }
+                if (cells.length >= 5) return cells;
+            }
+            return null;
+        }
+
+        // ---- 中国象棋落子 ----
+        function placeChess(row, col) {
+            const piece = chessBoard[row][col];
+            const playerColor = currentPlayer === 1 ? RED : BLACK;
+            if (piece && piece.color === playerColor) {
+                selectedPos = { row, col };
+                validMoves = getValidMoves(row, col);
+                render();
+                setStatus(`选中 ${piece.color === RED ? '红' : '黑'}${getChineseName(piece.type)}`);
+                return true;
+            }
+            if (selectedPos) {
+                const from = selectedPos,
+                    target = { row, col };
+                const isValid = validMoves.some(m => m.row === row && m.col === col);
+                if (!isValid) { setStatus('❌ 非法走法');
+                    selectedPos = null;
+                    validMoves = [];
+                    render(); return false; }
+                const capturedPiece = chessBoard[row][col];
+                const movingPiece = chessBoard[from.row][from.col];
+                chessHistory.push({
+                    from: { ...from },
+                    to: { ...target },
+                    piece: { ...movingPiece },
+                    captured: capturedPiece ? { ...capturedPiece } : null,
+                    boardState: chessBoard.map(r => r.map(c => c ? { ...c } : null)),
+                    currentPlayer: currentPlayer,
+                    selectedPos: selectedPos ? { ...selectedPos } : null,
+                });
+                chessBoard[target.row][target.col] = movingPiece;
+                chessBoard[from.row][from.col] = null;
+                if (capturedPiece && capturedPiece.type === CHESS_TYPES.KING) {
+                    gameOver = true;
+                    const winner = currentPlayer === 1 ? '红' : '黑';
+                    setStatus(`🏆 ${winner}方获胜！`);
+                    selectedPos = null;
+                    validMoves = [];
+                    updateUI();
+                    render();
+                    return true;
+                }
+                currentPlayer = currentPlayer === 1 ? 2 : 1;
+                selectedPos = null;
+                validMoves = [];
+                lastMove = target;
+                updateUI();
+                render();
+                const name = currentPlayer === 1 ? '红' : '黑';
+                setStatus(`⚫ ${name}棋落子`);
+                return true;
+            }
+            setStatus('❌ 请先选中己方棋子');
+            return false;
+        }
+
+        function getValidMoves(row, col) {
+            const piece = chessBoard[row][col];
+            if (!piece) return [];
+            const { type, color } = piece;
+            const enemy = color === RED ? BLACK : RED;
+            const moves = [];
+            const addMove = (r, c) => {
+                if (r < 0 || r >= CHESS_ROWS || c < 0 || c >= CHESS_COLS) return false;
+                const target = chessBoard[r][c];
+                if (target && target.color === color) return false;
+                moves.push({ row: r, col: c });
+                return true;
+            };
+            const inBoard = (r, c) => r >= 0 && r < CHESS_ROWS && c >= 0 && c < CHESS_COLS;
+            switch (type) {
+                case CHESS_TYPES.KING: {
+                    const minRow = color === RED ? 7 : 0,
+                        maxRow = color === RED ? 9 : 2,
+                        minCol = 3,
+                        maxCol = 5;
+                    for (const [dr, dc] of [
+                            [-1, 0],
+                            [1, 0],
+                            [0, -1],
+                            [0, 1]
+                        ]) {
+                        const nr = row + dr,
+                            nc = col + dc;
+                        if (nr >= minRow && nr <= maxRow && nc >= minCol && nc <= maxCol) addMove(nr, nc);
+                    }
+                    const enemyKing = findKing(enemy);
+                    if (enemyKing && enemyKing.col === col) {
+                        let blocked = false;
+                        const step = enemy === RED ? 1 : -1;
+                        for (let r = row + step; r !== enemyKing.row; r += step) {
+                            if (chessBoard[r][col]) { blocked = true; break; }
+                        }
+                        if (!blocked) moves.push({ row: enemyKing.row, col: enemyKing.col });
+                    }
+                    break;
+                }
+                case CHESS_TYPES.ADVISOR: {
+                    const minRow = color === RED ? 7 : 0,
+                        maxRow = color === RED ? 9 : 2,
+                        minCol = 3,
+                        maxCol = 5;
+                    for (const [dr, dc] of [
+                            [-1, -1],
+                            [-1, 1],
+                            [1, -1],
+                            [1, 1]
+                        ]) {
+                        const nr = row + dr,
+                            nc = col + dc;
+                        if (nr >= minRow && nr <= maxRow && nc >= minCol && nc <= maxCol) addMove(nr, nc);
+                    }
+                    break;
+                }
+                case CHESS_TYPES.ELEPHANT: {
+                    const river = color === RED ? 5 : 4;
+                    for (const [dr, dc] of [
+                            [-2, -2],
+                            [-2, 2],
+                            [2, -2],
+                            [2, 2]
+                        ]) {
+                        const nr = row + dr,
+                            nc = col + dc;
+                        if (!inBoard(nr, nc)) continue;
+                        if (color === RED && nr < river) continue;
+                        if (color === BLACK && nr > river) continue;
+                        const er = row + dr / 2,
+                            ec = col + dc / 2;
+                        if (chessBoard[er][ec]) continue;
+                        addMove(nr, nc);
+                    }
+                    break;
+                }
+                case CHESS_TYPES.HORSE: {
+                    const jumps = [
+                        [-2, -1, -1, 0],
+                        [-2, 1, -1, 0],
+                        [2, -1, 1, 0],
+                        [2, 1, 1, 0],
+                        [-1, -2, 0, -1],
+                        [1, -2, 0, -1],
+                        [-1, 2, 0, 1],
+                        [1, 2, 0, 1]
+                    ];
+                    for (const [dr, dc, lr, lc] of jumps) {
+                        const nr = row + dr,
+                            nc = col + dc;
+                        const legR = row + lr,
+                            legC = col + lc;
+                        if (!inBoard(nr, nc)) continue;
+                        if (chessBoard[legR][legC]) continue;
+                        addMove(nr, nc);
+                    }
+                    break;
+                }
+                case CHESS_TYPES.ROOK: {
+                    for (const [dr, dc] of [
+                            [-1, 0],
+                            [1, 0],
+                            [0, -1],
+                            [0, 1]
+                        ]) {
+                        let r = row + dr,
+                            c = col + dc;
+                        while (inBoard(r, c)) {
+                            const target = chessBoard[r][c];
+                            if (target) {
+                                if (target.color !== color) moves.push({ row: r, col: c });
+                                break;
+                            }
+                            moves.push({ row: r, col: c });
+                            r += dr;
+                            c += dc;
+                        }
+                    }
+                    break;
+                }
+                case CHESS_TYPES.CANNON: {
+                    for (const [dr, dc] of [
+                            [-1, 0],
+                            [1, 0],
+                            [0, -1],
+                            [0, 1]
+                        ]) {
+                        let r = row + dr,
+                            c = col + dc;
+                        let foundScreen = false;
+                        while (inBoard(r, c)) {
+                            const target = chessBoard[r][c];
+                            if (!foundScreen) {
+                                if (target) foundScreen = true;
+                                else moves.push({ row: r, col: c });
+                            } else {
+                                if (target) {
+                                    if (target.color !== color) moves.push({ row: r, col: c });
+                                    break;
+                                }
+                            }
+                            r += dr;
+                            c += dc;
+                        }
+                    }
+                    break;
+                }
+                case CHESS_TYPES.PAWN: {
+                    const forward = color === RED ? -1 : 1;
+                    const river = color === RED ? 5 : 4;
+                    const nr = row + forward;
+                    if (inBoard(nr, col)) addMove(nr, col);
+                    if ((color === RED && row <= river) || (color === BLACK && row >= river)) {
+                        for (const dc of [-1, 1]) {
+                            const nc = col + dc;
+                            if (inBoard(row, nc)) addMove(row, nc);
+                        }
+                    }
+                    break;
+                }
+            }
+            return moves;
+        }
+
+        function findKing(color) {
+            for (let r = 0; r < CHESS_ROWS; r++)
+                for (let c = 0; c < CHESS_COLS; c++) {
+                    const p = chessBoard[r][c];
+                    if (p && p.type === CHESS_TYPES.KING && p.color === color) return { row: r, col: c };
+                }
+            return null;
+        }
+
+        function getChineseName(type) {
+            const map = { king: '帅/将', advisor: '仕/士', elephant: '相/象', horse: '马', rook: '车', cannon: '炮', pawn: '兵/卒' };
+            return map[type] || type;
+        }
+
+        // ---- 悔棋（通用） ----
+        function undoMove() {
+            if (gameOver) { setStatus('⛔ 游戏已结束，不能悔棋'); return; }
+            if (gameType === 'chess') {
+                if (chessHistory.length === 0) { setStatus('⛔ 没有可以悔的棋'); return; }
+                const entry = chessHistory.pop();
+                chessBoard = entry.boardState.map(r => r.map(c => c ? { ...c } : null));
+                currentPlayer = entry.currentPlayer;
+                selectedPos = entry.selectedPos;
+                validMoves = [];
+                gameOver = false;
+                updateUI();
+                render();
+                const name = currentPlayer === 1 ? '红' : '黑';
+                setStatus(`↩ 悔棋成功 · ${name}棋落子`);
+                return;
+            }
+            if (gameType === 'fly') {
+                setStatus('⛔ 飞行棋暂不支持悔棋');
+                return;
+            }
+            if (moveHistory.length === 0) { setStatus('⛔ 没有可以悔的棋'); return; }
+            const entry = moveHistory.pop();
+            board = entry.boardState.map(r => [...r]);
+            if (gameType === 'go') {
+                captured = { ...entry.capturedState };
+                lastMove = entry.lastMove;
+                lastCaptured = entry.lastCaptured.map(p => [...p]);
+            } else {
+                captured = { ...entry.capturedState };
+                lastMove = entry.lastMove;
+            }
+            currentPlayer = entry.player;
+            winCells = [];
+            gameOver = false;
+            updateUI();
+            render();
+            const name = currentPlayer === 1 ? '黑' : '白';
+            setStatus(`↩ 悔棋成功 · ${name}棋落子`);
+        }
+
+        // ---- UI更新 ----
+        function updateUI() {
+            updateTurnIndicator();
+            if (gameType === 'go') {
+                blackCapEl.textContent = captured[1];
+                whiteCapEl.textContent = captured[2];
+            }
+            if (gameOver) turnText.textContent = '已结束';
+        }
+
+        function setStatus(msg) {
+            statusMsg.innerHTML = msg;
+        }
+
+        // ---- 渲染（主入口） ----
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+            if (gameType === 'go' || gameType === 'gomoku') renderBoardGame();
+            else if (gameType === 'chess') renderChess();
+            else if (gameType === 'fly') renderFly();
+        }
+
+        // ---- 围棋/五子棋渲染 ----
+        function renderBoardGame() {
+            const grad = ctx.createLinearGradient(0, 0, W, H);
+            grad.addColorStop(0, '#dbb07c');
+            grad.addColorStop(0.5, '#d4a86a');
+            grad.addColorStop(1, '#c89a60');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+            ctx.strokeStyle = '#3d2817';
+            ctx.lineWidth = 1.2;
+            for (let i = 0; i < BOARD_SIZE; i++) {
+                const x = MARGIN + i * CELL_SIZE,
+                    y = MARGIN + i * CELL_SIZE;
+                ctx.beginPath();
+                ctx.moveTo(x, MARGIN);
+                ctx.lineTo(x, MARGIN + (BOARD_SIZE - 1) * CELL_SIZE);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(MARGIN, y);
+                ctx.lineTo(MARGIN + (BOARD_SIZE - 1) * CELL_SIZE, y);
+                ctx.stroke();
+            }
+            if (gameType === 'go') {
+                const starPoints = [
+                    [3, 3],
+                    [3, 9],
+                    [3, 15],
+                    [9, 3],
+                    [9, 9],
+                    [9, 15],
+                    [15, 3],
+                    [15, 9],
+                    [15, 15]
+                ];
+                ctx.fillStyle = '#3d2817';
+                for (const [r, c] of starPoints) {
+                    if (r < BOARD_SIZE && c < BOARD_SIZE) {
+                        const x = MARGIN + c * CELL_SIZE,
+                            y = MARGIN + r * CELL_SIZE;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+            } else if (gameType === 'gomoku') {
+                const starPoints = [
+                    [7, 7],
+                    [3, 3],
+                    [3, 11],
+                    [11, 3],
+                    [11, 11]
+                ];
+                ctx.fillStyle = '#3d2817';
+                for (const [r, c] of starPoints) {
+                    if (r < BOARD_SIZE && c < BOARD_SIZE) {
+                        const x = MARGIN + c * CELL_SIZE,
+                            y = MARGIN + r * CELL_SIZE;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                        ctx.fill();
+                    }
+                }
+            }
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const val = board[r][c];
+                    if (val === 0) continue;
+                    const x = MARGIN + c * CELL_SIZE,
+                        y = MARGIN + r * CELL_SIZE,
+                        radius = CELL_SIZE * 0.43;
+                    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    if (val === 1) {
+                        const grad2 = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, radius * 0.1, x, y, radius);
+                        grad2.addColorStop(0, '#666');
+                        grad2.addColorStop(0.5, '#222');
+                        grad2.addColorStop(1, '#000');
+                        ctx.fillStyle = grad2;
+                    } else {
+                        const grad2 = ctx.createRadialGradient(x - radius * 0.3, y - radius * 0.3, radius * 0.1, x, y, radius);
+                        grad2.addColorStop(0, '#ffffff');
+                        grad2.addColorStop(0.6, '#f0f0f0');
+                        grad2.addColorStop(1, '#c8c8c8');
+                        ctx.fillStyle = grad2;
+                        ctx.shadowColor = 'rgba(0,0,0,0.15)';
+                    }
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    if (val === 1) {
+                        const hl = ctx.createRadialGradient(x - radius * 0.25, y - radius * 0.3, radius * 0.05, x - radius *
+                            0.2, y - radius * 0.25, radius * 0.35);
+                        hl.addColorStop(0, 'rgba(255,255,255,0.2)');
+                        hl.addColorStop(1, 'rgba(255,255,255,0)');
+                        ctx.fillStyle = hl;
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                        ctx.fill();
+                    } else {
+                        const hl = ctx.createRadialGradient(x - radius * 0.25, y - radius * 0.3, radius * 0.05, x - radius *
+                            0.2, y - radius * 0.25, radius * 0.45);
+                        hl.addColorStop(0, 'rgba(255,255,255,0.9)');
+                        hl.addColorStop(1, 'rgba(255,255,255,0)');
+                        ctx.fillStyle = hl;
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                        ctx.fill();
+                        ctx.strokeStyle = 'rgba(180,180,180,0.3)';
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                        ctx.stroke();
+                    }
+                    ctx.shadowColor = 'transparent';
+                }
+            }
+            if (gameType === 'gomoku' && winCells.length > 0) {
+                ctx.strokeStyle = '#ff3b2a';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = 'rgba(255,50,30,0.5)';
+                ctx.shadowBlur = 8;
+                const first = winCells[0],
+                    last = winCells[winCells.length - 1];
+                const x1 = MARGIN + first[1] * CELL_SIZE,
+                    y1 = MARGIN + first[0] * CELL_SIZE;
+                const x2 = MARGIN + last[1] * CELL_SIZE,
+                    y2 = MARGIN + last[0] * CELL_SIZE;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                for (const [r, c] of winCells) {
+                    const x = MARGIN + c * CELL_SIZE,
+                        y = MARGIN + r * CELL_SIZE;
+                    ctx.strokeStyle = '#ff3b2a';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, CELL_SIZE * 0.2, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }
+            }
+            if (lastMove && !gameOver) {
+                const x = MARGIN + lastMove.col * CELL_SIZE,
+                    y = MARGIN + lastMove.row * CELL_SIZE;
+                const color = board[lastMove.row][lastMove.col] === 1 ? '#ff6b4a' : '#ff3b2a';
+                ctx.fillStyle = color;
+                ctx.shadowColor = 'rgba(255,50,30,0.4)';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+            if (hoverPos && !gameOver && board[hoverPos.row][hoverPos.col] === 0) {
+                const x = MARGIN + hoverPos.col * CELL_SIZE,
+                    y = MARGIN + hoverPos.row * CELL_SIZE,
+                    radius = CELL_SIZE * 0.41;
+                const color = currentPlayer === 1 ? 'rgba(0,0,0,0.35)' : 'rgba(255,255,255,0.45)';
+                ctx.fillStyle = color;
+                ctx.shadowColor = 'transparent';
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = currentPlayer === 1 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.2)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(x, y, radius + 2, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+        }
+
+        // ---- 中国象棋渲染 ----
+        function renderChess() {
+            ctx.fillStyle = '#dbb07c';
+            ctx.fillRect(0, 0, W, H);
+            const cell = CELL_SIZE,
+                margin = MARGIN,
+                rows = CHESS_ROWS,
+                cols = CHESS_COLS;
+            for (let c = 0; c < cols; c++) {
+                const x = margin + c * cell;
+                ctx.beginPath();
+                ctx.moveTo(x, margin);
+                ctx.lineTo(x, margin + (rows - 1) * cell);
+                ctx.strokeStyle = '#3d2817';
+                ctx.lineWidth = 1.2;
+                ctx.stroke();
+            }
+            for (let r = 0; r < rows; r++) {
+                const y = margin + r * cell;
+                if (r === 4) {
+                    for (let c = 0; c < cols; c++) {
+                        const x = margin + c * cell;
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        ctx.lineTo(x + cell / 2, y);
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.moveTo(x + cell / 2, y);
+                        ctx.lineTo(x + cell, y);
+                        ctx.stroke();
+                    }
+                    ctx.fillStyle = '#3d2817';
+                    ctx.font = '20px serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const midX = margin + (cols - 1) * cell / 2;
+                    ctx.fillText('楚  河', midX - 30, y - 8);
+                    ctx.fillText('汉  界', midX + 30, y + 8);
+                } else {
+                    ctx.beginPath();
+                    ctx.moveTo(margin, y);
+                    ctx.lineTo(margin + (cols - 1) * cell, y);
+                    ctx.stroke();
+                }
+            }
+            const drawPalace = (rowStart, rowEnd) => {
+                const x1 = margin + 3 * cell,
+                    y1 = margin + rowStart * cell;
+                const x2 = margin + 5 * cell,
+                    y2 = margin + rowEnd * cell;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(x2, y1);
+                ctx.lineTo(x1, y2);
+                ctx.stroke();
+            };
+            drawPalace(0, 2);
+            drawPalace(7, 9);
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const piece = chessBoard[r][c];
+                    if (!piece) continue;
+                    const x = margin + c * cell,
+                        y = margin + r * cell,
+                        radius = cell * 0.42;
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    const grad = ctx.createRadialGradient(x - radius * 0.2, y - radius * 0.2, radius * 0.1, x, y, radius);
+                    if (piece.color === RED) {
+                        grad.addColorStop(0, '#f5d0b0');
+                        grad.addColorStop(0.7, '#e8b080');
+                        grad.addColorStop(1, '#c89060');
+                    } else {
+                        grad.addColorStop(0, '#e0e0e0');
+                        grad.addColorStop(0.7, '#b0b0b0');
+                        grad.addColorStop(1, '#808080');
+                    }
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    ctx.strokeStyle = piece.color === RED ? '#8a2a1a' : '#222';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    const name = getPieceName(piece.type, piece.color);
+                    ctx.font = `bold ${radius * 1.2}px 'KaiTi','STKaiti','楷体',serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = piece.color === RED ? '#8a1a0a' : '#111';
+                    ctx.shadowColor = 'rgba(255,255,255,0.2)';
+                    ctx.shadowBlur = 2;
+                    ctx.fillText(name, x, y + 1);
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                }
+            }
+            if (selectedPos) {
+                const x = margin + selectedPos.col * cell,
+                    y = margin + selectedPos.row * cell;
+                ctx.strokeStyle = '#ff3b2a';
+                ctx.lineWidth = 3;
+                ctx.shadowColor = 'rgba(255,50,30,0.5)';
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(x, y, cell * 0.44, 0, 2 * Math.PI);
+                ctx.stroke();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                for (const m of validMoves) {
+                    const mx = margin + m.col * cell,
+                        my = margin + m.row * cell;
+                    ctx.fillStyle = 'rgba(0,255,0,0.3)';
+                    ctx.beginPath();
+                    ctx.arc(mx, my, cell * 0.2, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+            if (lastMove) {
+                const x = margin + lastMove.col * cell,
+                    y = margin + lastMove.row * cell;
+                ctx.fillStyle = '#ff6b4a';
+                ctx.shadowColor = 'rgba(255,50,30,0.4)';
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function getPieceName(type, color) {
+            const names = {
+                king: color === RED ? '帅' : '将',
+                advisor: color === RED ? '仕' : '士',
+                elephant: color === RED ? '相' : '象',
+                horse: '马',
+                rook: '车',
+                cannon: color === RED ? '炮' : '砲',
+                pawn: color === RED ? '兵' : '卒'
+            };
+            return names[type] || type;
+        }
+
+        // ---- 飞行棋渲染 ----
+        function renderFly() {
+            if (!flyState) return;
+            const pts = flyState.pathPoints;
+            const radius = flyState.cellRadius;
+            const planeRadius = flyState.planeRadius;
+
+            // 背景
+            ctx.fillStyle = '#dbb07c';
+            ctx.fillRect(0, 0, W, H);
+
+            // 绘制路径格子
+            const colorMap = {
+                red: '#ff6b6b',
+                blue: '#4d8aff',
+                yellow: '#f7d44a',
+                green: '#5cb85c'
+            };
+            // 每个格子颜色（按段）
+            for (let i = 0; i < pts.length; i++) {
+                const seg = Math.floor(i / 13);
+                const colors = ['red', 'yellow', 'blue', 'green']; // 对应段0-3
+                const col = colors[seg % 4];
+                const p = pts[i];
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = colorMap[col] || '#ccc';
+                ctx.fill();
+                ctx.strokeStyle = '#3d2817';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                // 标注起点
+                for (let pi = 0; pi < flyState.players.length; pi++) {
+                    const startIdx = flyState.startIndices[pi];
+                    if (i === startIdx) {
+                        ctx.fillStyle = '#000';
+                        ctx.font = '12px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('起', p.x, p.y);
+                    }
+                }
+            }
+
+            // 绘制终点（在中心区域）
+            const centerX = W / 2,
+                centerY = H / 2;
+            ctx.font = '20px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (let pi = 0; pi < flyState.players.length; pi++) {
+                const p = flyState.players[pi];
+                const col = p.color;
+                const angle = (pi / flyState.players.length) * 2 * Math.PI - Math.PI / 2;
+                const rOffset = 60;
+                const tx = centerX + rOffset * Math.cos(angle);
+                const ty = centerY + rOffset * Math.sin(angle);
+                ctx.fillStyle = colorMap[col];
+                ctx.beginPath();
+                ctx.arc(tx, ty, 20, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.fillStyle = '#000';
+                ctx.font = '14px sans-serif';
+                ctx.fillText('终', tx, ty);
+            }
+
+            // 绘制飞机
+            for (let pi = 0; pi < flyState.players.length; pi++) {
+                const player = flyState.players[pi];
+                const col = player.color;
+                for (let j = 0; j < player.planes.length; j++) {
+                    const pos = player.planes[j];
+                    if (pos === 52) continue; // 已完成，不显示
+                    let px, py;
+                    if (pos === -1) {
+                        // 停在起点附近
+                        const angle = (pi / flyState.players.length) * 2 * Math.PI - Math.PI / 2;
+                        const rOffset = 100;
+                        const cx = W / 2 + rOffset * Math.cos(angle);
+                        const cy = H / 2 + rOffset * Math.sin(angle);
+                        // 偏移多架飞机
+                        const offX = (j - 1.5) * 18;
+                        const offY = (j % 2) * 18;
+                        px = cx + offX;
+                        py = cy + offY;
+                    } else {
+                        const pt = pts[pos % pts.length];
+                        px = pt.x;
+                        py = pt.y;
+                        // 多个飞机在同一格，偏移
+                        const same = flyState.players.filter((p, idx) => idx !== pi && p.planes.some(pp => pp === pos));
+                        const count = same.length;
+                        if (count > 0) {
+                            const offset = (j * 2 - 3) * 6;
+                            px += offset;
+                            py += offset;
+                        }
+                    }
+                    // 绘制飞机
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    ctx.beginPath();
+                    ctx.arc(px, py, planeRadius, 0, 2 * Math.PI);
+                    ctx.fillStyle = colorMap[col] || '#888';
+                    ctx.fill();
+                    ctx.strokeStyle = '#222';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                    // 编号
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 12px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(j + 1, px, py + 1);
+                    // 如果当前玩家选中该飞机
+                    if (flyState.phase === 'select' && pi === flyState.currentPlayer && flyState.moveablePlanes.includes(j)) {
+                        ctx.strokeStyle = '#ff0';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.arc(px, py, planeRadius + 4, 0, 2 * Math.PI);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // 显示玩家信息
+            ctx.fillStyle = '#3d2817';
+            ctx.font = '14px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            let info = '';
+            for (let i = 0; i < flyState.players.length; i++) {
+                const p = flyState.players[i];
+                info += `${p.name}${p.finished}/4 `;
+            }
+            ctx.fillText(info, 10, 10);
+        }
+
+        // ---- 事件处理 ----
+        function getBoardPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                e.preventDefault();
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            const x = (clientX - rect.left) * scaleX;
+            const y = (clientY - rect.top) * scaleY;
+
+            if (gameType === 'chess') {
+                const cell = CELL_SIZE,
+                    margin = MARGIN;
+                let minDist = cell * 0.45,
+                    best = null;
+                for (let r = 0; r < CHESS_ROWS; r++) {
+                    for (let c = 0; c < CHESS_COLS; c++) {
+                        const px = margin + c * cell,
+                            py = margin + r * cell;
+                        const dist = Math.hypot(x - px, y - py);
+                        if (dist < minDist) { minDist = dist;
+                            best = { row: r, col: c }; }
+                    }
+                }
+                return best;
+            } else if (gameType === 'fly') {
+                // 检测点击飞机
+                if (!flyState || flyState.phase !== 'select') return null;
+                const playerIdx = flyState.currentPlayer;
+                const player = flyState.players[playerIdx];
+                const moveable = flyState.moveablePlanes;
+                // 遍历可移动飞机
+                for (const idx of moveable) {
+                    const pos = player.planes[idx];
+                    let px, py;
+                    if (pos === -1) {
+                        // 起点区域
+                        const angle = (playerIdx / flyState.players.length) * 2 * Math.PI - Math.PI / 2;
+                        const rOffset = 100;
+                        const cx = W / 2 + rOffset * Math.cos(angle);
+                        const cy = H / 2 + rOffset * Math.sin(angle);
+                        const offX = (idx - 1.5) * 18;
+                        const offY = (idx % 2) * 18;
+                        px = cx + offX;
+                        py = cy + offY;
+                    } else {
+                        const pt = flyState.pathPoints[pos % flyState.pathPoints.length];
+                        px = pt.x;
+                        py = pt.y;
+                    }
+                    const dist = Math.hypot(x - px, y - py);
+                    if (dist < flyState.planeRadius + 8) {
+                        return { row: idx, col: -1 }; // 用row存储飞机索引
+                    }
+                }
+                return null;
+            } else {
+                let minDist = CELL_SIZE * 0.55,
+                    best = null;
+                for (let r = 0; r < BOARD_SIZE; r++) {
+                    for (let c = 0; c < BOARD_SIZE; c++) {
+                        const px = MARGIN + c * CELL_SIZE,
+                            py = MARGIN + r * CELL_SIZE;
+                        const dist = Math.hypot(x - px, y - py);
+                        if (dist < minDist) { minDist = dist;
+                            best = { row: r, col: c }; }
+                    }
+                }
+                return best;
+            }
+        }
+
+        function onCanvasClick(e) {
+            if (gameOver) {
+                setStatus('⛔ 游戏已结束，请点击"新局"重新开始');
+                return;
+            }
+            if (gameType === 'fly') {
+                if (flyState.phase !== 'select') return;
+                const pos = getBoardPos(e);
+                if (!pos) return;
+                if (pos.col === -1) {
+                    // 选择飞机
+                    const planeIdx = pos.row;
+                    selectFlyPlane(planeIdx);
+                }
+                return;
+            }
+            const pos = getBoardPos(e);
+            if (!pos) return;
+            if (gameType === 'go' || gameType === 'gomoku') {
+                placeStone(pos.row, pos.col);
+                if (!gameOver && gameType === 'go') {
+                    if (!hasLegalMove(currentPlayer)) {
+                        const next = currentPlayer === 1 ? 2 : 1;
+                        if (!hasLegalMove(next)) {
+                            gameOver = true;
+                            setStatus('🏁 游戏结束 · 双方无子可下');
+                            updateUI();
+                            render();
+                            calculateScoreGo();
+                        } else {
+                            setStatus(`⏭️ ${currentPlayer === 1 ? '黑' : '白'}棋无子可下，自动虚手`);
+                            currentPlayer = next;
+                            updateUI();
+                            render();
+                            placeStonePass();
+                        }
+                    }
+                }
+            } else if (gameType === 'chess') {
+                placeStone(pos.row, pos.col);
+            }
+        }
+
+        function onCanvasMove(e) {
+            if (gameType === 'chess' || gameType === 'fly') return;
+            const pos = getBoardPos(e);
+            if (pos) {
+                if (!hoverPos || hoverPos.row !== pos.row || hoverPos.col !== pos.col) {
+                    hoverPos = pos;
+                    render();
+                }
+            } else {
+                if (hoverPos) { hoverPos = null;
+                    render(); }
+            }
+        }
+
+        function onCanvasLeave() {
+            if (hoverPos) { hoverPos = null;
+                render(); }
+        }
+
+        // ---- 按钮事件 ----
+        btnReset.addEventListener('click', () => {
+            resetGame();
+            setStatus('🔄 新局开始');
+        });
+        btnUndo.addEventListener('click', undoMove);
+
+        // 掷骰按钮
+        btnRoll.addEventListener('click', rollDice);
+
+        // ---- 注册事件 ----
+        canvas.addEventListener('click', onCanvasClick);
+        canvas.addEventListener('mousemove', onCanvasMove);
+        canvas.addEventListener('mouseleave', onCanvasLeave);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            onCanvasClick(e);
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            onCanvasMove(e);
+        });
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+        });
+
+        // ---- 键盘 ----
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'r' || e.key === 'R') btnReset.click();
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                btnUndo.click();
+            }
+            if (e.key === ' ' && gameType === 'fly') {
+                e.preventDefault();
+                if (!btnRoll.disabled) btnRoll.click();
+            }
+        });
+
+        // ---- 启动 ----
+        resetGame();
+        updateUIMode();
+        window.addEventListener('resize', render);
+        console.log('🎮 棋类游戏已启动！支持围棋、五子棋、中国象棋、飞行棋。');
+        console.log('快捷键: R=新局, Ctrl+Z=悔棋, 空格=掷骰(飞行棋)');
+    </script>
+</body>
+</html>

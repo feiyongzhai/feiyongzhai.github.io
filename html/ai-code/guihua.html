@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>骑行规划 - 多圆标记</title>
+
+    <!-- 使用国内 CDN (BootCDN) -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js">
+    </script>
+
+    <style>
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, sans-serif;
+            background: #f0f2f5;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100vw;
+            height: 100vh;
+            background: #e5e9f0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 加载提示 */
+        #loading-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            font-size: 16px;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+            transition: opacity 0.6s ease;
+        }
+        #loading-tip.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #d0d7e2;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== 控制面板 ===== */
+        .control-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 92%;
+            max-width: 720px;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            border-radius: 20px;
+            padding: 20px 24px 24px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+
+        .control-panel .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .control-panel .panel-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-panel .panel-header h2 .icon-bike {
+            font-size: 22px;
+        }
+
+        .control-panel .panel-header .status-badge {
+            font-size: 12px;
+            padding: 4px 14px;
+            border-radius: 30px;
+            background: rgba(52, 152, 219, 0.15);
+            color: #2980b9;
+            font-weight: 500;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .control-panel .panel-header .status-badge.active {
+            background: rgba(46, 204, 113, 0.18);
+            color: #27ae60;
+            border-color: rgba(46, 204, 113, 0.25);
+        }
+
+        .radius-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .radius-row label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #334155;
+            white-space: nowrap;
+            min-width: 44px;
+        }
+
+        .radius-row input[type="range"] {
+            flex: 1;
+            min-width: 100px;
+            height: 5px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 10px;
+            outline: none;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .radius-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #2c3e50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .radius-row input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.12);
+            border-color: #3498db;
+        }
+
+        .radius-row input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #2c3e50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .radius-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            min-width: 70px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.2px;
+        }
+
+        .radius-value .unit {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            margin-left: 2px;
+        }
+
+        .preset-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .preset-btn {
+            padding: 4px 16px;
+            border-radius: 30px;
+            border: 1.5px solid #d0d7e2;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+            transition: 0.2s;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .preset-btn:hover {
+            background: rgba(52, 152, 219, 0.12);
+            border-color: #3498db;
+            color: #1e293b;
+            transform: translateY(-1px);
+        }
+
+        .preset-btn:active {
+            transform: scale(0.96);
+        }
+
+        .preset-btn.active-preset {
+            background: #3498db;
+            border-color: #3498db;
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .info-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            padding: 10px 0 6px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            margin-top: 4px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .info-row .info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .info-row .info-item .label {
+            font-weight: 400;
+            color: #94a3b8;
+        }
+
+        .info-row .info-item .value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .info-row .info-item .value.coord {
+            font-family: 'SF Mono', 'Cascadia Code', monospace;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 1px 8px;
+            border-radius: 12px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f4f9;
+            color: #334155;
+        }
+
+        .action-btn:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .action-btn.clear-btn {
+            background: rgba(239, 68, 68, 0.08);
+            color: #dc2626;
+        }
+
+        .action-btn.clear-btn:hover {
+            background: rgba(239, 68, 68, 0.18);
+        }
+
+        .action-btn.center-btn {
+            background: rgba(52, 152, 219, 0.10);
+            color: #2980b9;
+        }
+
+        .action-btn.center-btn:hover {
+            background: rgba(52, 152, 219, 0.20);
+        }
+
+        .action-btn.delete-btn {
+            background: rgba(239, 68, 68, 0.08);
+            color: #dc2626;
+        }
+
+        .action-btn.delete-btn:hover {
+            background: rgba(239, 68, 68, 0.18);
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 13px;
+            color: #94a3b8;
+            padding: 6px 0 0;
+            margin-top: 2px;
+            border-top: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .hint strong {
+            color: #475569;
+            font-weight: 500;
+        }
+
+        @media (max-width: 640px) {
+            .control-panel {
+                bottom: 16px;
+                padding: 16px 16px 18px;
+                border-radius: 16px;
+                width: 96%;
+            }
+            .control-panel .panel-header h2 {
+                font-size: 15px;
+            }
+            .radius-row label {
+                font-size: 13px;
+                min-width: 36px;
+            }
+            .radius-value {
+                font-size: 16px;
+                min-width: 60px;
+            }
+            .preset-btn {
+                font-size: 12px;
+                padding: 3px 12px;
+            }
+            .info-row {
+                font-size: 12px;
+                gap: 6px 14px;
+            }
+            .info-row .info-item .value.coord {
+                font-size: 11px;
+            }
+            .action-btn {
+                font-size: 12px;
+                padding: 5px 14px;
+            }
+            .hint {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .control-panel {
+                padding: 12px 12px 14px;
+                bottom: 10px;
+            }
+            .radius-row {
+                gap: 8px;
+            }
+            .radius-value {
+                font-size: 14px;
+                min-width: 50px;
+            }
+            .preset-group {
+                gap: 5px;
+            }
+            .preset-btn {
+                font-size: 11px;
+                padding: 2px 10px;
+            }
+        }
+
+        .leaflet-control-attribution {
+            font-size: 9px !important;
+            opacity: 0.7;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        @keyframes pulse-marker {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        .pulse-ring {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.25);
+            border: 2px solid rgba(52, 152, 219, 0.5);
+            animation: pulse-marker 1.8s ease-out infinite;
+            pointer-events: none;
+        }
+
+        /* 选中的圆高亮样式 */
+        .circle-selected {
+            stroke: #e74c3c !important;
+            stroke-width: 5px !important;
+            fill-opacity: 0.35 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 地图容器 -->
+    <div id="map">
+        <div id="loading-tip">
+            <div class="spinner"></div>
+            <span>地图加载中…</span>
+        </div>
+    </div>
+
+    <!-- 控制面板 -->
+    <div class="control-panel" id="controlPanel">
+        <div class="panel-header">
+            <h2>
+                <span class="icon-bike">🚴</span> 骑行规划
+            </h2>
+            <span class="status-badge" id="statusBadge">📍 点击地图添加圆</span>
+        </div>
+
+        <div class="radius-row">
+            <label for="radiusSlider">半径</label>
+            <input type="range" id="radiusSlider" min="0.5" max="100" step="0.5" value="10" />
+            <span class="radius-value" id="radiusDisplay">10<span class="unit">km</span></span>
+        </div>
+
+        <div class="preset-group" id="presetGroup">
+            <button class="preset-btn" data-radius="3">3 km</button>
+            <button class="preset-btn" data-radius="5">5 km</button>
+            <button class="preset-btn active-preset" data-radius="10">10 km</button>
+            <button class="preset-btn" data-radius="20">20 km</button>
+            <button class="preset-btn" data-radius="50">50 km</button>
+        </div>
+
+        <div class="info-row" id="infoRow">
+            <span class="info-item">
+                <span class="label">选中圆心</span>
+                <span class="value coord" id="coordDisplay">—</span>
+            </span>
+            <span class="info-item">
+                <span class="label">面积</span>
+                <span class="value" id="areaDisplay">—</span>
+            </span>
+            <span class="info-item">
+                <span class="label">周长</span>
+                <span class="value" id="perimeterDisplay">—</span>
+            </span>
+            <span class="info-item">
+                <span class="label">圆总数</span>
+                <span class="value" id="countDisplay">0</span>
+            </span>
+        </div>
+
+        <div class="action-row">
+            <button class="action-btn delete-btn" id="deleteBtn">🗑 删除选中</button>
+            <button class="action-btn clear-btn" id="clearBtn">✕ 清除全部</button>
+            <button class="action-btn center-btn" id="centerBtn">⟲ 定位圆心</button>
+        </div>
+
+        <div class="hint">
+            💡 <strong>点击地图</strong> 添加新圆 · <strong>点击圆</strong> 选中调整 · 拖动滑块 / 预设修改半径
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ========== 配置 ==========
+            const CONFIG = {
+                defaultCenter: [31.2304, 121.4737],
+                defaultZoom: 11,
+                minRadius: 0.5,
+                maxRadius: 100,
+                defaultRadius: 10,
+                fillColor: '#3498db',
+                fillOpacity: 0.18,
+                borderColor: '#2980b9',
+                borderWeight: 3,
+                selectedBorderColor: '#e74c3c',
+                selectedFillOpacity: 0.35,
+                markerColor: '#e74c3c',
+            };
+
+            // ========== 状态 ==========
+            let circles = []; // { id, center, radiusKm, circleLayer, markerLayer, isSelected }
+            let nextId = 1;
+            let selectedId = null; // 当前选中的圆ID
+            let currentRadius = CONFIG.defaultRadius;
+
+            // ========== DOM 引用 ==========
+            const dom = {
+                map: document.getElementById('map'),
+                slider: document.getElementById('radiusSlider'),
+                radiusDisplay: document.getElementById('radiusDisplay'),
+                statusBadge: document.getElementById('statusBadge'),
+                coordDisplay: document.getElementById('coordDisplay'),
+                areaDisplay: document.getElementById('areaDisplay'),
+                perimeterDisplay: document.getElementById('perimeterDisplay'),
+                countDisplay: document.getElementById('countDisplay'),
+                clearBtn: document.getElementById('clearBtn'),
+                centerBtn: document.getElementById('centerBtn'),
+                deleteBtn: document.getElementById('deleteBtn'),
+                presetGroup: document.getElementById('presetGroup'),
+                loadingTip: document.getElementById('loading-tip'),
+            };
+
+            // ========== 初始化地图 ==========
+            const map = L.map(dom.map, {
+                center: CONFIG.defaultCenter,
+                zoom: CONFIG.defaultZoom,
+                zoomControl: true,
+                fadeAnimation: true,
+                attributionControl: true,
+            });
+
+            // 使用高德地图底图（无需Key）
+            const tileLayer = L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="https://www.amap.com/">高德地图</a>'
+            }).addTo(map);
+
+            tileLayer.on('tileerror', function() {
+                console.warn('高德地图瓦片加载失败，可尝试刷新或检查网络。');
+            });
+
+            map.on('load', function() {
+                dom.loadingTip.classList.add('hidden');
+            });
+            setTimeout(() => {
+                dom.loadingTip.classList.add('hidden');
+            }, 5000);
+
+            // ========== 工具函数 ==========
+            function fmt(v, digits = 2) {
+                return Number(v.toFixed(digits));
+            }
+
+            function calcArea(radiusKm) {
+                return Math.PI * radiusKm * radiusKm;
+            }
+
+            function calcPerimeter(radiusKm) {
+                return 2 * Math.PI * radiusKm;
+            }
+
+            function fmtCoord(lat, lng) {
+                return `${fmt(lat, 4)}°, ${fmt(lng, 4)}°`;
+            }
+
+            function updateBadge() {
+                const el = dom.statusBadge;
+                const count = circles.length;
+                if (count === 0) {
+                    el.textContent = '📍 点击地图添加圆';
+                    el.className = 'status-badge';
+                } else if (selectedId !== null) {
+                    el.textContent = `✅ 已选中 ${selectedId} 号圆`;
+                    el.className = 'status-badge active';
+                } else {
+                    el.textContent = `⭕ 共 ${count} 个圆，点击圆选中`;
+                    el.className = 'status-badge';
+                }
+            }
+
+            function updateInfo() {
+                const selected = circles.find(c => c.id === selectedId);
+                if (selected) {
+                    const { center, radiusKm } = selected;
+                    dom.coordDisplay.textContent = fmtCoord(center[0], center[1]);
+                    const area = calcArea(radiusKm);
+                    const peri = calcPerimeter(radiusKm);
+                    dom.areaDisplay.textContent = area >= 1000 ? `${fmt(area / 1000, 1)} 千km²` : `${fmt(area, 1)} km²`;
+                    dom.perimeterDisplay.textContent = peri >= 1000 ? `${fmt(peri / 1000, 1)} 千km` : `${fmt(peri, 1)} km`;
+                } else {
+                    dom.coordDisplay.textContent = '—';
+                    dom.areaDisplay.textContent = '—';
+                    dom.perimeterDisplay.textContent = '—';
+                }
+                dom.countDisplay.textContent = circles.length;
+                updateBadge();
+            }
+
+            function highlightPreset(radius) {
+                const btns = dom.presetGroup.querySelectorAll('.preset-btn');
+                btns.forEach(btn => {
+                    const val = parseFloat(btn.dataset.radius);
+                    if (Math.abs(val - radius) < 0.01) {
+                        btn.classList.add('active-preset');
+                    } else {
+                        btn.classList.remove('active-preset');
+                    }
+                });
+            }
+
+            // 更新滑块显示
+            function updateSliderAndDisplay(radius) {
+                dom.slider.value = radius;
+                dom.radiusDisplay.innerHTML = `${fmt(radius,1)}<span class="unit">km</span>`;
+                highlightPreset(radius);
+            }
+
+            // ========== 核心：创建圆 ==========
+            function createCircle(center, radiusKm) {
+                const id = nextId++;
+                const radiusM = radiusKm * 1000;
+
+                // 圆图层
+                const circleLayer = L.circle(center, {
+                    radius: radiusM,
+                    color: CONFIG.borderColor,
+                    weight: CONFIG.borderWeight,
+                    fillColor: CONFIG.fillColor,
+                    fillOpacity: CONFIG.fillOpacity,
+                    opacity: 0.85,
+                    smoothFactor: 1.5,
+                    interactive: true,
+                }).addTo(map);
+
+                // 点击圆 -> 选中
+                circleLayer.on('click', function(e) {
+                    selectCircle(id);
+                    // 阻止冒泡，避免触发地图点击
+                    L.DomEvent.stopPropagation(e);
+                });
+
+                // 标记（带脉冲）
+                const iconHtml = `
+                    <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+                        <div class="pulse-ring" style="width:48px;height:48px;left:-8px;top:-8px;"></div>
+                        <div style="
+                            width:32px;height:32px;
+                            background:${CONFIG.markerColor};
+                            border-radius:50%;
+                            border:3px solid white;
+                            box-shadow:0 2px 12px rgba(0,0,0,0.3);
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            font-size:14px;
+                            color:white;
+                            font-weight:bold;
+                        ">${id}</div>
+                    </div>
+                `;
+                const icon = L.divIcon({
+                    html: iconHtml,
+                    className: '',
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16],
+                    popupAnchor: [0, -20],
+                });
+                const markerLayer = L.marker(center, { icon }).addTo(map);
+                markerLayer.bindPopup(`
+                    <div style="font-size:14px;padding:4px 2px;">
+                        <strong>📍 圆 #${id}</strong><br/>
+                        ${fmtCoord(center[0], center[1])}<br/>
+                        半径: ${fmt(radiusKm,1)} km
+                    </div>
+                `);
+
+                // 存储对象
+                const circleObj = {
+                    id,
+                    center,
+                    radiusKm,
+                    circleLayer,
+                    markerLayer,
+                    isSelected: false,
+                };
+                circles.push(circleObj);
+
+                // 默认选中新创建的圆
+                selectCircle(id);
+
+                // 自动调整视图以显示新圆
+                const bounds = circleLayer.getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
+                }
+
+                updateInfo();
+                return circleObj;
+            }
+
+            // ========== 选择圆 ==========
+            function selectCircle(id) {
+                // 取消原来的选中样式
+                if (selectedId !== null) {
+                    const prev = circles.find(c => c.id === selectedId);
+                    if (prev) {
+                        prev.isSelected = false;
+                        prev.circleLayer.setStyle({
+                            color: CONFIG.borderColor,
+                            weight: CONFIG.borderWeight,
+                            fillOpacity: CONFIG.fillOpacity,
+                        });
+                    }
+                }
+
+                selectedId = id;
+                const current = circles.find(c => c.id === id);
+                if (current) {
+                    current.isSelected = true;
+                    current.circleLayer.setStyle({
+                        color: CONFIG.selectedBorderColor,
+                        weight: CONFIG.borderWeight + 2,
+                        fillOpacity: CONFIG.selectedFillOpacity,
+                    });
+                    // 更新滑块和显示
+                    currentRadius = current.radiusKm;
+                    updateSliderAndDisplay(currentRadius);
+                    updateInfo();
+                    // 定位到圆心
+                    map.setView(current.center, Math.max(map.getZoom(), 12));
+                } else {
+                    selectedId = null;
+                    updateInfo();
+                }
+            }
+
+            // ========== 删除圆 ==========
+            function deleteSelectedCircle() {
+                if (selectedId === null) {
+                    dom.statusBadge.textContent = '⚠️ 请先点击选中一个圆';
+                    dom.statusBadge.className = 'status-badge';
+                    setTimeout(() => updateBadge(), 1500);
+                    return;
+                }
+                const idx = circles.findIndex(c => c.id === selectedId);
+                if (idx === -1) return;
+                const circle = circles[idx];
+                // 移除图层
+                map.removeLayer(circle.circleLayer);
+                map.removeLayer(circle.markerLayer);
+                circles.splice(idx, 1);
+                selectedId = null;
+                // 如果有剩余圆，选中最后一个
+                if (circles.length > 0) {
+                    selectCircle(circles[circles.length - 1].id);
+                } else {
+                    // 没有圆了，重置显示
+                    updateSliderAndDisplay(CONFIG.defaultRadius);
+                    currentRadius = CONFIG.defaultRadius;
+                    updateInfo();
+                }
+                updateInfo();
+            }
+
+            // ========== 清除全部 ==========
+            function clearAllCircles() {
+                circles.forEach(c => {
+                    map.removeLayer(c.circleLayer);
+                    map.removeLayer(c.markerLayer);
+                });
+                circles = [];
+                selectedId = null;
+                currentRadius = CONFIG.defaultRadius;
+                updateSliderAndDisplay(currentRadius);
+                updateInfo();
+                dom.statusBadge.textContent = '🗑 已清除所有圆';
+                dom.statusBadge.className = 'status-badge';
+                setTimeout(() => updateBadge(), 1000);
+            }
+
+            // ========== 更新选中的圆的半径 ==========
+            function updateSelectedRadius(newRadius) {
+                if (selectedId === null) {
+                    // 如果没有选中的圆，只保存当前半径供后续新建使用
+                    currentRadius = newRadius;
+                    updateSliderAndDisplay(newRadius);
+                    updateInfo();
+                    dom.statusBadge.textContent = '⚠️ 请先选中一个圆再调整';
+                    dom.statusBadge.className = 'status-badge';
+                    setTimeout(() => updateBadge(), 1500);
+                    return;
+                }
+                const circle = circles.find(c => c.id === selectedId);
+                if (!circle) return;
+                circle.radiusKm = newRadius;
+                circle.circleLayer.setRadius(newRadius * 1000);
+                currentRadius = newRadius;
+                updateSliderAndDisplay(newRadius);
+                updateInfo();
+            }
+
+            // ========== 事件绑定 ==========
+
+            // 点击地图添加新圆
+            map.on('click', function(e) {
+                const { lat, lng } = e.latlng;
+                const radius = parseFloat(dom.slider.value) || CONFIG.defaultRadius;
+                createCircle([lat, lng], radius);
+            });
+
+            // 半径滑块
+            dom.slider.addEventListener('input', function() {
+                const val = parseFloat(this.value);
+                if (isNaN(val) || val < CONFIG.minRadius) return;
+                currentRadius = val;
+                dom.radiusDisplay.innerHTML = `${fmt(val,1)}<span class="unit">km</span>`;
+                highlightPreset(val);
+                // 如果有选中的圆，更新其半径
+                if (selectedId !== null) {
+                    const circle = circles.find(c => c.id === selectedId);
+                    if (circle) {
+                        circle.radiusKm = val;
+                        circle.circleLayer.setRadius(val * 1000);
+                        updateInfo();
+                    }
+                } else {
+                    // 没有选中时只更新显示，不修改任何圆
+                }
+            });
+
+            // 预设按钮
+            dom.presetGroup.addEventListener('click', function(e) {
+                const btn = e.target.closest('.preset-btn');
+                if (!btn) return;
+                const radius = parseFloat(btn.dataset.radius);
+                if (isNaN(radius) || radius < CONFIG.minRadius) return;
+
+                currentRadius = radius;
+                dom.slider.value = radius;
+                dom.radiusDisplay.innerHTML = `${fmt(radius,1)}<span class="unit">km</span>`;
+                highlightPreset(radius);
+
+                if (selectedId !== null) {
+                    const circle = circles.find(c => c.id === selectedId);
+                    if (circle) {
+                        circle.radiusKm = radius;
+                        circle.circleLayer.setRadius(radius * 1000);
+                        updateInfo();
+                    }
+                } else {
+                    // 没有选中时，提示
+                    dom.statusBadge.textContent = '⚠️ 请先选中一个圆再应用预设';
+                    dom.statusBadge.className = 'status-badge';
+                    setTimeout(() => updateBadge(), 1500);
+                }
+            });
+
+            // 删除选中
+            dom.deleteBtn.addEventListener('click', deleteSelectedCircle);
+
+            // 清除全部
+            dom.clearBtn.addEventListener('click', clearAllCircles);
+
+            // 定位圆心
+            dom.centerBtn.addEventListener('click', function() {
+                if (selectedId !== null) {
+                    const circle = circles.find(c => c.id === selectedId);
+                    if (circle) {
+                        map.setView(circle.center, Math.max(map.getZoom(), 12));
+                        // 高亮闪烁
+                        circle.circleLayer.setStyle({ fillOpacity: 0.45 });
+                        setTimeout(() => {
+                            if (circle) {
+                                circle.circleLayer.setStyle({
+                                    fillOpacity: circle.isSelected ? CONFIG.selectedFillOpacity : CONFIG
+                                        .fillOpacity
+                                });
+                            }
+                        }, 500);
+                    }
+                } else {
+                    dom.statusBadge.textContent = '⚠️ 请先选中一个圆';
+                    dom.statusBadge.className = 'status-badge';
+                    setTimeout(() => updateBadge(), 1500);
+                }
+            });
+
+            // 快捷键：Delete 键删除选中
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Delete' || e.key === 'Backspace') {
+                    if (selectedId !== null) {
+                        e.preventDefault();
+                        deleteSelectedCircle();
+                    }
+                }
+                if (e.ctrlKey && e.shiftKey && (e.key === 'c' || e.key === 'C')) {
+                    e.preventDefault();
+                    clearAllCircles();
+                }
+                if (e.ctrlKey && e.shiftKey && (e.key === 'f' || e.key === 'F')) {
+                    e.preventDefault();
+                    dom.centerBtn.click();
+                }
+            });
+
+            // ========== 初始演示：创建两个圆 ==========
+            setTimeout(() => {
+                // 上海中心
+                const center1 = CONFIG.defaultCenter;
+                const r1 = CONFIG.defaultRadius;
+                createCircle(center1, r1);
+
+                // 附近另一个点（例如上海浦东）
+                const center2 = [31.2504, 121.5037];
+                const r2 = 5;
+                createCircle(center2, r2);
+
+                // 选中第一个圆
+                selectCircle(1);
+
+                // 适应视图
+                const group = L.featureGroup(circles.map(c => c.circleLayer));
+                const bounds = group.getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { padding: [60, 60], maxZoom: 13 });
+                }
+                updateInfo();
+            }, 500);
+
+            window.addEventListener('resize', function() {
+                map.invalidateSize();
+            });
+
+            console.log('🚴 多圆骑行规划地图已加载！');
+            console.log('💡 点击地图添加新圆，点击圆选中，滑块调整半径。');
+            console.log('⌨️ 快捷键: Delete 删除选中 | Ctrl+Shift+C 清除全部 | Ctrl+Shift+F 定位圆心');
+
+        })();
+    </script>
+
+</body>
+</html>
